@@ -27,6 +27,11 @@ For non-container development, copy `.env.example` to
 `uvicorn main:app --reload`; start a separate worker with
 `celery -A tasks.celery_app.celery_app worker --loglevel=INFO`.
 
+Run `python scripts/gpu_healthcheck.py` inside the GPU worker environment to
+check CUDA/GPU visibility, COLMAP/Nerfstudio CLIs, and core Python modules.
+SAM/MobileSAM module and checkpoint checks are optional unless `SAM_ENABLED`
+is true; use `--require-sam` to require them explicitly.
+
 ## API flow
 
 1. `POST /api/v1/projects` with `{"name":"Living room","room_type":"living_room"}`.

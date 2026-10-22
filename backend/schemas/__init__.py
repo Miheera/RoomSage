@@ -4,6 +4,13 @@ from uuid import UUID
 from pydantic import BaseModel, ConfigDict, Field
 
 from models import JobStatus, TaskType
+from schemas.integration import (
+    CatalogEditPayload,
+    CatalogItemDetails,
+    ControlNetHandoff,
+    JobExecutionMetrics,
+    Viewer3DState,
+)
 
 
 class ProjectCreate(BaseModel):
@@ -60,3 +67,18 @@ class JobRead(BaseModel):
     depth_map_url: str | None = None
     created_at: datetime
     updated_at: datetime
+
+__all__ = [
+    "CatalogEditPayload",
+    "CatalogItemDetails",
+    "ControlNetHandoff",
+    "EditJobRequest",
+    "EditJobResponse",
+    "JobCreate",
+    "JobCreated",
+    "JobExecutionMetrics",
+    "JobRead",
+    "ProjectCreate",
+    "ProjectRead",
+    "Viewer3DState",
+]

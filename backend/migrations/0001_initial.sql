@@ -1,0 +1,26 @@
+CREATE EXTENSION IF NOT EXISTS pgcrypto;
+
+CREATE TABLE IF NOT EXISTS projects (
+    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    name VARCHAR(160) NOT NULL,
+    room_type VARCHAR(80),
+    photo_keys JSON NOT NULL DEFAULT '[]'::json,
+    created_at TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT CURRENT_TIMESTAMP
+);
+
+CREATE TABLE IF NOT EXISTS jobs (
+    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    project_id UUID NOT NULL REFERENCES projects(id) ON DELETE CASCADE,
+    task_type VARCHAR(32) NOT NULL,
+    status VARCHAR(10) NOT NULL DEFAULT 'QUEUED',
+    progress INTEGER NOT NULL DEFAULT 0,
+    error_message TEXT,
+    output_key VARCHAR(1024),
+    created_at TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    started_at TIMESTAMP WITH TIME ZONE,
+    completed_at TIMESTAMP WITH TIME ZONE,
+    updated_at TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT CURRENT_TIMESTAMP
+);
+
+CREATE INDEX IF NOT EXISTS ix_jobs_project_id ON jobs(project_id);
+CREATE INDEX IF NOT EXISTS ix_jobs_status ON jobs(status);
