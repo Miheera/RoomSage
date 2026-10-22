@@ -1,0 +1,40 @@
+FROM nvidia/cuda:12.1.1-devel-ubuntu22.04
+
+ENV DEBIAN_FRONTEND=noninteractive \
+    PYTHONUNBUFFERED=1 \
+    PIP_NO_CACHE_DIR=1
+
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    ca-certificates \
+    colmap \
+    ffmpeg \
+    git \
+    libgl1 \
+    libglib2.0-0 \
+    python3.10 \
+    python3-dev \
+    python3-pip \
+    wget \
+    && rm -rf /var/lib/apt/lists/*
+
+RUN update-alternatives --install /usr/bin/python python /usr/bin/python3.10 1 \
+    && update-alternatives --install /usr/bin/pip pip /usr/bin/pip3 1 \
+    && python -m pip install --no-cache-dir --upgrade "pip<26"
+
+RUN python -m pip install --no-cache-dir \
+    torch==2.2.2 \
+    torchvision==0.17.2 \
+    torchaudio==2.2.2 \
+    --index-url https://download.pytorch.org/whl/cu121
+
+RUN python -m pip install --no-cache-dir gsplat==1.0.0 \
+    && python -m pip install --no-cache-dir nerfstudio==1.0.2
+
+WORKDIR /app
+
+COPY requirements.txt .
+RUN python -m pip install --no-cache-dir -r requirements.txt
+
+COPY . .
+
+CMD ["celery", "-A", "tasks.celery_app.celery_app", "worker", "--loglevel=INFO", "-Q", "gpu_queue"]

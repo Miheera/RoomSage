@@ -1,0 +1,111 @@
+services:
+  postgres:
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_DB: roomsage
+      POSTGRES_USER: roomsage
+      POSTGRES_PASSWORD: roomsage
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U roomsage -d roomsage"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+  redis:
+    image: redis:7-alpine
+    ports:
+      - "6379:6379"
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 5s
+      timeout: 3s
+      retries: 10
+
+  api:
+    build: .
+    command: uvicorn main:app --host 0.0.0.0 --port 8000
+    environment:
+      DATABASE_URL: postgresql+psycopg://roomsage:roomsage@postgres:5432/roomsage
+      REDIS_URL: redis://redis:6379/0
+      CORS_ORIGINS: '["http://localhost:5173"]'
+      S3_BUCKET: roomsage
+      AWS_REGION: us-east-1
+      S3_ENDPOINT_URL: http://minio:9000
+      AWS_ACCESS_KEY_ID: minioadmin
+      AWS_SECRET_ACCESS_KEY: minioadmin
+    ports:
+      - "8000:8000"
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+      minio:
+        condition: service_healthy
+      minio-init:
+        condition: service_completed_successfully
+
+  worker:
+    build:
+      context: .
+      dockerfile: Dockerfile.gpu
+    command: celery -A tasks.celery_app.celery_app worker --loglevel=INFO
+    gpus: all
+    environment:
+      DATABASE_URL: postgresql+psycopg://roomsage:roomsage@postgres:5432/roomsage
+      REDIS_URL: redis://redis:6379/0
+      S3_BUCKET: roomsage
+      AWS_REGION: us-east-1
+      S3_ENDPOINT_URL: http://minio:9000
+      AWS_ACCESS_KEY_ID: minioadmin
+      AWS_SECRET_ACCESS_KEY: minioadmin
+      TRIPOSR_RUN_SCRIPT: ${TRIPOSR_RUN_SCRIPT:-}
+      EDIT_ASSET_GAUSSIAN_COUNT: ${EDIT_ASSET_GAUSSIAN_COUNT:-10000}
+      SAM_ENABLED: ${SAM_ENABLED:-false}
+      SAM_CHECKPOINT_PATH: ${SAM_CHECKPOINT_PATH:-}
+      SAM_MODEL_TYPE: ${SAM_MODEL_TYPE:-vit_b}
+      SAM_MAX_KEYFRAMES: ${SAM_MAX_KEYFRAMES:-8}
+      SAM_MAX_MASKS_PER_KEYFRAME: ${SAM_MAX_MASKS_PER_KEYFRAME:-128}
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+      minio:
+        condition: service_healthy
+      minio-init:
+        condition: service_completed_successfully
+
+  minio:
+    image: minio/minio:latest
+    command: server /data --console-address ":9001"
+    environment:
+      MINIO_ROOT_USER: minioadmin
+      MINIO_ROOT_PASSWORD: minioadmin
+    ports:
+      - "9000:9000"
+      - "9001:9001"
+    volumes:
+      - minio_data:/data
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:9000/minio/health/live"]
+      interval: 5s
+      timeout: 3s
+      retries: 10
+
+  minio-init:
+    image: minio/mc:latest
+    depends_on:
+      minio:
+        condition: service_healthy
+    entrypoint: ["/bin/sh", "-c"]
+    command:
+      - mc alias set local http://minio:9000 minioadmin minioadmin && mc mb --ignore-existing local/roomsage
+
+volumes:
+  postgres_data:
+  minio_data:
