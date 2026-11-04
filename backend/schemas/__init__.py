@@ -1,7 +1,7 @@
 from datetime import datetime
 from uuid import UUID
 
-from pydantic import BaseModel, ConfigDict, Field
+from pydantic import BaseModel, ConfigDict, Field, field_validator
 
 from models import JobStatus, TaskType
 from schemas.integration import (
@@ -29,8 +29,38 @@ class ProjectRead(BaseModel):
     created_at: datetime
 
 
+class PhotoQualityFeedback(BaseModel):
+    filename: str
+    status: str
+    is_blurry: bool
+    lighting_status: str
+    resolution: tuple[int, int]
+    feedback_message: str
+
+
+class PhotoUploadResponse(BaseModel):
+    project_id: UUID
+    total_uploaded: int
+    photos: list[PhotoQualityFeedback]
+    # Keep existing clients that need the uploaded S3 keys working.
+    photo_keys: list[str] = Field(default_factory=list)
+
+
 class JobCreate(BaseModel):
     project_id: UUID
+
+
+class RedesignJobRequest(BaseModel):
+    project_id: UUID
+    prompt: str = Field(min_length=1, max_length=2000)
+
+    @field_validator("prompt")
+    @classmethod
+    def strip_prompt(cls, value: str) -> str:
+        value = value.strip()
+        if not value:
+            raise ValueError("prompt must not be blank.")
+        return value
 
 
 class JobCreated(BaseModel):
@@ -80,5 +110,8 @@ __all__ = [
     "JobRead",
     "ProjectCreate",
     "ProjectRead",
+    "PhotoQualityFeedback",
+    "PhotoUploadResponse",
+    "RedesignJobRequest",
     "Viewer3DState",
 ]

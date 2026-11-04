@@ -48,6 +48,7 @@ class CatalogEditPayload(BaseModel):
     selected_item: CatalogItemDetails
     insert_catalog_image_key: str = Field(min_length=1)
     target_position: tuple[float, float, float]
+    target_scale: float = Field(gt=0)
     style_prompt: str | None = None
 
     @field_validator("insert_catalog_image_key", "style_prompt")

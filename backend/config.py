@@ -34,6 +34,15 @@ class Settings(BaseSettings):
     sam_model_type: str = "vit_b"
     sam_max_keyframes: int = 8
     sam_max_masks_per_keyframe: int = 128
+    redesign_mode: str = "diffusion"
+    redesign_device: str = "cuda"
+    redesign_max_side: int = 768
+    redesign_steps: int = 25
+    redesign_guidance: float = 7.5
+    redesign_controlnet_scale: float = 0.9
+    redesign_seed: int = 42
+    inpaint_model: str = "stable-diffusion-v1-5/stable-diffusion-inpainting"
+    controlnet_model: str = "lllyasviel/control_v11f1p_sd15_depth"
 
     @field_validator("cors_origins", mode="before")
     @classmethod

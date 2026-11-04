@@ -1,0 +1,316 @@
+{
+  "modern": {
+    "label": "Modern",
+    "description": "Clean lines, uncluttered surfaces and a restrained, high-contrast palette.",
+    "palette": [
+      "white",
+      "grey",
+      "black",
+      "charcoal"
+    ],
+    "accent_colors": [
+      "blue",
+      "teal"
+    ],
+    "materials": [
+      "metal",
+      "glass",
+      "leatherette",
+      "engineered wood",
+      "steel",
+      "polyester"
+    ],
+    "keywords": [
+      "modern",
+      "sleek",
+      "geometric",
+      "abstract",
+      "chrome",
+      "minimal"
+    ],
+    "avoid": [
+      "ornate",
+      "carved",
+      "antique",
+      "floral",
+      "ethnic"
+    ],
+    "prompt": "modern interior, clean lines, neutral palette, sleek furniture, uncluttered, soft daylight"
+  },
+  "minimalist": {
+    "label": "Minimalist",
+    "description": "Only what is needed: pale tones, plain finishes and open floor space.",
+    "palette": [
+      "white",
+      "off white",
+      "beige",
+      "light grey"
+    ],
+    "accent_colors": [
+      "black"
+    ],
+    "materials": [
+      "wood",
+      "cotton",
+      "linen",
+      "metal",
+      "polyester"
+    ],
+    "keywords": [
+      "minimal",
+      "plain",
+      "solid",
+      "simple",
+      "sheer"
+    ],
+    "avoid": [
+      "ornate",
+      "floral",
+      "printed",
+      "carved",
+      "multicolor",
+      "ethnic",
+      "embroidered"
+    ],
+    "prompt": "minimalist interior, sparse furniture, white walls, plain surfaces, open floor space, calm natural light"
+  },
+  "scandinavian": {
+    "label": "Scandinavian",
+    "description": "Bright rooms with pale wood, soft textiles and a homely feel.",
+    "palette": [
+      "white",
+      "light grey",
+      "beige",
+      "natural"
+    ],
+    "accent_colors": [
+      "pastel blue",
+      "mustard",
+      "green"
+    ],
+    "materials": [
+      "birch",
+      "pine",
+      "oak",
+      "ash",
+      "wool",
+      "cotton",
+      "linen"
+    ],
+    "keywords": [
+      "scandinavian",
+      "nordic",
+      "hygge",
+      "woven",
+      "natural"
+    ],
+    "avoid": [
+      "ornate",
+      "gold",
+      "carved",
+      "dark"
+    ],
+    "prompt": "scandinavian interior, light oak wood, white walls, cozy wool textiles, airy, bright natural light"
+  },
+  "industrial": {
+    "label": "Industrial",
+    "description": "Raw finishes: dark metal, aged wood, leather and exposed texture.",
+    "palette": [
+      "charcoal",
+      "black",
+      "brown",
+      "grey"
+    ],
+    "accent_colors": [
+      "rust",
+      "copper"
+    ],
+    "materials": [
+      "steel",
+      "iron",
+      "metal",
+      "leather",
+      "leatherette",
+      "reclaimed wood",
+      "concrete"
+    ],
+    "keywords": [
+      "industrial",
+      "loft",
+      "rustic",
+      "vintage",
+      "edison",
+      "iron"
+    ],
+    "avoid": [
+      "floral",
+      "pastel",
+      "ornate",
+      "lace"
+    ],
+    "prompt": "industrial loft interior, dark metal frames, leather seating, aged wood, exposed concrete texture, moody light"
+  },
+  "bohemian": {
+    "label": "Bohemian",
+    "description": "Layered patterns, handcrafted pieces, warm colour and plenty of plants.",
+    "palette": [
+      "terracotta",
+      "mustard",
+      "teal",
+      "cream"
+    ],
+    "accent_colors": [
+      "orange",
+      "pink",
+      "multicolor",
+      "purple",
+      "red",
+      "green",
+      "yellow"
+    ],
+    "materials": [
+      "rattan",
+      "jute",
+      "cotton",
+      "wool",
+      "cane",
+      "bamboo",
+      "brass"
+    ],
+    "keywords": [
+      "ethnic",
+      "handcrafted",
+      "handmade",
+      "printed",
+      "floral",
+      "tribal",
+      "dhurrie",
+      "kilim",
+      "macrame"
+    ],
+    "avoid": [
+      "chrome",
+      "glass"
+    ],
+    "prompt": "bohemian interior, layered patterned textiles, rattan furniture, many plants, warm earthy colours, eclectic handcrafted decor"
+  },
+  "traditional": {
+    "label": "Traditional",
+    "description": "Rich wood, carved detail and warm, classic Indian and European forms.",
+    "palette": [
+      "brown",
+      "maroon",
+      "gold",
+      "cream"
+    ],
+    "accent_colors": [
+      "green",
+      "navy",
+      "purple",
+      "red",
+      "blue"
+    ],
+    "materials": [
+      "teak",
+      "sheesham",
+      "mango wood",
+      "solid wood",
+      "brass",
+      "silk",
+      "velvet"
+    ],
+    "keywords": [
+      "traditional",
+      "carved",
+      "classic",
+      "antique",
+      "royal",
+      "ethnic",
+      "wooden"
+    ],
+    "avoid": [
+      "chrome",
+      "acrylic",
+      "neon"
+    ],
+    "prompt": "traditional interior, rich carved wood furniture, warm tones, classic upholstery, elegant brass details"
+  },
+  "contemporary": {
+    "label": "Contemporary",
+    "description": "Current and comfortable: soft curves, mixed textures and a muted palette.",
+    "palette": [
+      "grey",
+      "white",
+      "beige",
+      "taupe"
+    ],
+    "accent_colors": [
+      "navy",
+      "emerald",
+      "red",
+      "purple",
+      "green",
+      "blue"
+    ],
+    "materials": [
+      "fabric",
+      "wood",
+      "metal",
+      "glass",
+      "velvet",
+      "polyester",
+      "leatherette"
+    ],
+    "keywords": [
+      "contemporary",
+      "modern",
+      "soft",
+      "curved",
+      "textured"
+    ],
+    "avoid": [
+      "antique",
+      "carved"
+    ],
+    "prompt": "contemporary interior, soft curved furniture, muted palette, mixed textures, layered lighting"
+  },
+  "japandi": {
+    "label": "Japandi",
+    "description": "Japanese restraint meets Nordic warmth: low furniture, natural wood, earthy calm.",
+    "palette": [
+      "beige",
+      "sand",
+      "brown",
+      "off white"
+    ],
+    "accent_colors": [
+      "black",
+      "sage"
+    ],
+    "materials": [
+      "oak",
+      "ash",
+      "bamboo",
+      "linen",
+      "cotton",
+      "paper",
+      "ceramic"
+    ],
+    "keywords": [
+      "japandi",
+      "zen",
+      "bamboo",
+      "natural",
+      "low",
+      "wabi"
+    ],
+    "avoid": [
+      "ornate",
+      "gold",
+      "floral",
+      "multicolor",
+      "chrome"
+    ],
+    "prompt": "japandi interior, low wooden furniture, natural linen, muted earthy tones, wabi-sabi calm, soft diffused light"
+  }
+}

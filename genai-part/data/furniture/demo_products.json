@@ -1,0 +1,153 @@
+[
+ {
+  "product_id": "demo-bed",
+  "name": "DEMO bed (placeholder, not a real product)",
+  "category": "bed",
+  "compatible_themes": [
+   "modern",
+   "minimalist",
+   "scandinavian",
+   "industrial",
+   "bohemian",
+   "traditional",
+   "contemporary",
+   "japandi"
+  ],
+  "theme_source": "manual",
+  "price_inr": 15000.0,
+  "price_as_of": "demo",
+  "dimensions": {
+   "width_cm": 160.0,
+   "depth_cm": 200.0
+  },
+  "tags": [],
+  "room_types": [
+   "bedroom"
+  ],
+  "small_room_suitable": true,
+  "source": "demo_seed",
+  "source_license": "none",
+  "verification_status": "demo"
+ },
+ {
+  "product_id": "demo-coffee-table",
+  "name": "DEMO coffee table (placeholder, not a real product)",
+  "category": "table",
+  "compatible_themes": [
+   "modern",
+   "minimalist",
+   "scandinavian",
+   "industrial",
+   "bohemian",
+   "traditional",
+   "contemporary",
+   "japandi"
+  ],
+  "theme_source": "manual",
+  "price_inr": 4000.0,
+  "price_as_of": "demo",
+  "dimensions": {
+   "width_cm": 90.0,
+   "depth_cm": 50.0
+  },
+  "tags": [],
+  "room_types": [
+   "living_room"
+  ],
+  "small_room_suitable": true,
+  "source": "demo_seed",
+  "source_license": "none",
+  "verification_status": "demo"
+ },
+ {
+  "product_id": "demo-dining-table",
+  "name": "DEMO dining table (placeholder, not a real product)",
+  "category": "table",
+  "compatible_themes": [
+   "modern",
+   "minimalist",
+   "scandinavian",
+   "industrial",
+   "bohemian",
+   "traditional",
+   "contemporary",
+   "japandi"
+  ],
+  "theme_source": "manual",
+  "price_inr": 12000.0,
+  "price_as_of": "demo",
+  "dimensions": {
+   "width_cm": 120.0,
+   "depth_cm": 75.0
+  },
+  "tags": [],
+  "room_types": [
+   "dining_room"
+  ],
+  "small_room_suitable": true,
+  "source": "demo_seed",
+  "source_license": "none",
+  "verification_status": "demo"
+ },
+ {
+  "product_id": "demo-desk",
+  "name": "DEMO desk (placeholder, not a real product)",
+  "category": "table",
+  "compatible_themes": [
+   "modern",
+   "minimalist",
+   "scandinavian",
+   "industrial",
+   "bohemian",
+   "traditional",
+   "contemporary",
+   "japandi"
+  ],
+  "theme_source": "manual",
+  "price_inr": 6000.0,
+  "price_as_of": "demo",
+  "dimensions": {
+   "width_cm": 110.0,
+   "depth_cm": 55.0
+  },
+  "tags": [],
+  "room_types": [
+   "study"
+  ],
+  "small_room_suitable": true,
+  "source": "demo_seed",
+  "source_license": "none",
+  "verification_status": "demo"
+ },
+ {
+  "product_id": "demo-chair",
+  "name": "DEMO chair (placeholder, not a real product)",
+  "category": "chair",
+  "compatible_themes": [
+   "modern",
+   "minimalist",
+   "scandinavian",
+   "industrial",
+   "bohemian",
+   "traditional",
+   "contemporary",
+   "japandi"
+  ],
+  "theme_source": "manual",
+  "price_inr": 3000.0,
+  "price_as_of": "demo",
+  "dimensions": {
+   "width_cm": 50.0,
+   "depth_cm": 50.0
+  },
+  "tags": [],
+  "room_types": [
+   "dining_room",
+   "study"
+  ],
+  "small_room_suitable": true,
+  "source": "demo_seed",
+  "source_license": "none",
+  "verification_status": "demo"
+ }
+]

@@ -1,0 +1,7 @@
+# Real 2D redesign (REDESIGN_MODE=diffusion).
+# Install a CUDA build of torch first:
+#   pip install torch --index-url https://download.pytorch.org/whl/cu130
+diffusers>=0.42,<1.0
+transformers>=5.0,<6.0
+accelerate>=1.0
+safetensors>=0.4

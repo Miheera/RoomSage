@@ -1,4 +1,5 @@
 import asyncio
+from io import BytesIO
 import json
 import logging
 import math
@@ -26,6 +27,7 @@ from config import settings
 from database import SessionLocal
 from models import Job, JobStatus, Project, TaskType
 from services.depth_service import create_depth_map
+from services.controlnet_service import render_redesign
 from services.job_state import get_redis_client, record_job_state
 from services.s3_service import create_presigned_url, get_s3_client
 from services.segmentation_service import segment_gaussians
@@ -140,6 +142,13 @@ async def _run_command(
     cwd: Path | None = None,
 ) -> None:
     logger.info("Starting command: %s", command)
+    process_env = os.environ.copy()
+    # OpenCV can export its bundled Qt plugin path into child processes. COLMAP
+    # then tries to load OpenCV's xcb plugin in this headless worker and aborts.
+    # Run Qt tools offscreen and let them discover their own system plugins.
+    process_env["QT_QPA_PLATFORM"] = "offscreen"
+    process_env.pop("QT_QPA_PLATFORM_PLUGIN_PATH", None)
+    process_env.pop("QT_PLUGIN_PATH", None)
     process = subprocess.Popen(
         command,
         stdout=subprocess.PIPE,
@@ -150,6 +159,7 @@ async def _run_command(
         bufsize=1,
         start_new_session=callable(getattr(os, "killpg", None)),
         cwd=cwd,
+        env=process_env,
     )
     assert process.stdout is not None
     try:
@@ -691,6 +701,7 @@ def reconstruct_project(job_id: str, project_id: str) -> dict[str, str | bool | 
         output_url = create_presigned_url(output_key)
         job.output_key = output_key
         depth_map_available = False
+        job.depth_map_available = False
         depth_map_url: str | None = None
         depth_map_path = workspace / "outputs" / "depth_map.png"
         training_config = _find_training_config(workspace / "exports")
@@ -711,15 +722,31 @@ def reconstruct_project(job_id: str, project_id: str) -> dict[str, str | bool | 
                 db=db,
                 redis_client=redis_client,
             )
+            project = db.get(Project, project_uuid)
+            if project is None:
+                raise LookupError(f"Project {project_id} does not exist.")
+            db.refresh(project)
+            expected_depth_map_key = f"{project_id}/outputs/depth_map.png"
+            if (
+                depth_result.s3_key != expected_depth_map_key
+                or project.depth_map_s3_key != depth_result.s3_key
+            ):
+                raise RuntimeError(
+                    "Depth map key was not persisted to PostgreSQL."
+                )
             depth_map_available = True
             depth_map_url = depth_result.url
-        except Exception:
+            job.depth_map_available = True
+        except Exception as exc:
             logger.exception(
-                "Depth-map rendering failed for project %s; reconstruction artifacts remain available",
+                "Depth-map rendering or persistence verification failed for project %s",
                 project_id,
             )
+            job.depth_map_available = False
+            raise RuntimeError(
+                "Depth map rendering failed; required for Stage 3 redesign."
+            ) from exc
 
-        job.depth_map_available = depth_map_available
         _update_job(
             db,
             job,
@@ -773,6 +800,64 @@ def reconstruct_project(job_id: str, project_id: str) -> dict[str, str | bool | 
                 project_lock.release()
             except Exception:
                 logger.exception("Could not release reconstruction lock for project %s", project_id)
+        redis_client.close()
+        db.close()
+
+
+@celery_app.task(name="roomsage.run_2d_redesign", acks_late=True, reject_on_worker_lost=True)
+def run_2d_redesign_task(job_id: str, project_id: str, prompt: str) -> dict[str, str]:
+    db: Session = SessionLocal()
+    redis_client: Redis = get_redis_client()
+    job: Job | None = None
+    try:
+        project_uuid, job_uuid = UUID(project_id), UUID(job_id)
+        job = db.get(Job, job_uuid)
+        project = db.get(Project, project_uuid)
+        if job is None or project is None or job.project_id != project_uuid:
+            raise LookupError("Redesign job or project was not found.")
+        if job.task_type != TaskType.REDESIGN_2D:
+            raise ValueError("Job is not a 2D redesign task.")
+        expected_depth_map_key = f"{project_uuid}/outputs/depth_map.png"
+        if project.depth_map_s3_key != expected_depth_map_key or not project.photo_keys:
+            raise ValueError("Project is missing its depth map or primary room photo.")
+
+        _update_job(db, job, redis_client, status=JobStatus.PROCESSING, progress=5,
+                    message="Downloading room photo and depth map.")
+        s3 = get_s3_client()
+        def download(key: str) -> bytes:
+            response = s3.get_object(Bucket=settings.s3_bucket, Key=key)
+            try:
+                return response["Body"].read()
+            finally:
+                response["Body"].close()
+
+        image_bytes = download(project.photo_keys[0])
+        depth_bytes = download(expected_depth_map_key)
+        _update_job(db, job, redis_client, status=JobStatus.PROCESSING, progress=20,
+                    message="Rendering the ControlNet redesign preview.")
+        preview = render_redesign(image_bytes, depth_bytes, prompt)
+        preview_key = f"{project_uuid}/outputs/redesign_preview.png"
+        s3.upload_fileobj(BytesIO(preview), settings.s3_bucket, preview_key,
+                          ExtraArgs={"ContentType": "image/png"})
+        project.s3_redesign_preview_key = preview_key
+        job.output_key = preview_key
+        db.commit()
+        _update_job(db, job, redis_client, status=JobStatus.COMPLETED, progress=100,
+                    message="2D redesign preview uploaded.", extra_fields={"output_key": preview_key})
+        return {"job_id": job_id, "output_key": preview_key}
+    except Exception as exc:
+        error = str(exc) or exc.__class__.__name__
+        logger.exception("2D redesign job %s failed", job_id)
+        if job is not None:
+            try:
+                _update_job(db, job, redis_client, status=JobStatus.FAILED,
+                            progress=job.progress, message=f"2D redesign failed: {error}",
+                            error_message=error)
+            except Exception:
+                db.rollback()
+                logger.exception("Could not persist failure state for redesign job %s", job_id)
+        raise
+    finally:
         redis_client.close()
         db.close()
 

@@ -23,5 +23,6 @@ celery_app.conf.update(
     task_routes={
         "roomsage.reconstruct_project": {"queue": "gpu_queue"},
         "roomsage.run_3d_edit": {"queue": "gpu_queue"},
+        "roomsage.run_2d_redesign": {"queue": "gpu_queue"},
     },
 )

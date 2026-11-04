@@ -14,13 +14,64 @@ from sqlalchemy.orm import Session
 from config import settings
 from database import get_db
 from models import Job, JobStatus, Project, TaskType
-from schemas import EditJobRequest, EditJobResponse, JobCreate, JobCreated, JobRead
+from schemas import EditJobRequest, EditJobResponse, JobCreate, JobCreated, JobRead, RedesignJobRequest
 from services.job_state import get_redis_client, read_job_state, record_job_state
 from services.s3_service import create_presigned_url, get_s3_client
-from tasks.pipeline_tasks import reconstruct_project, run_3d_edit_task
+from tasks.pipeline_tasks import reconstruct_project, run_2d_redesign_task, run_3d_edit_task
 
 logger = logging.getLogger(__name__)
 router = APIRouter(prefix="/jobs", tags=["jobs"])
+
+
+@router.post("/redesign", response_model=EditJobResponse, status_code=status.HTTP_202_ACCEPTED)
+def start_2d_redesign(
+    payload: RedesignJobRequest,
+    db: Annotated[Session, Depends(get_db)],
+) -> EditJobResponse:
+    project = db.get(Project, payload.project_id)
+    if project is None:
+        raise HTTPException(status_code=404, detail="Project not found.")
+    reconstruction = (
+        db.query(Job)
+        .filter(Job.project_id == project.id,
+                Job.task_type == TaskType.GAUSSIAN_SPLATTING_TRAIN,
+                Job.status == JobStatus.COMPLETED,
+                Job.depth_map_available.is_(True))
+        .order_by(Job.completed_at.desc())
+        .first()
+    )
+    if reconstruction is None or not project.depth_map_s3_key:
+        raise HTTPException(status_code=404, detail="Completed Stage 2 depth map not found.")
+    if not project.photo_keys:
+        raise HTTPException(status_code=422, detail="Project has no primary room photo.")
+
+    job = Job(project_id=project.id, task_type=TaskType.REDESIGN_2D,
+              status=JobStatus.QUEUED, progress=0)
+    db.add(job)
+    db.commit()
+    db.refresh(job)
+    redis_client = get_redis_client()
+    try:
+        record_job_state(redis_client, str(job.id), status=JobStatus.QUEUED, progress=0,
+                         message="2D redesign job queued.")
+        run_2d_redesign_task.apply_async(args=[str(job.id), str(project.id), payload.prompt],
+                                         task_id=str(job.id))
+    except (RedisError, CeleryError, OperationalError) as exc:
+        logger.exception("Could not queue redesign job %s", job.id)
+        job.status = JobStatus.FAILED
+        job.error_message = "The task queue is unavailable; please retry."
+        job.completed_at = datetime.now(timezone.utc)
+        db.commit()
+        try:
+            record_job_state(redis_client, str(job.id), status=JobStatus.FAILED, progress=0,
+                             message=job.error_message, error_message=job.error_message)
+        except RedisError:
+            logger.warning("Could not persist redesign queue failure for job %s", job.id, exc_info=True)
+        raise HTTPException(status_code=503, detail="The task queue is temporarily unavailable.") from exc
+    finally:
+        redis_client.close()
+    return EditJobResponse(job_id=job.id, status=job.status,
+                           polling_url=f"/api/v1/jobs/{job.id}")
 
 
 @router.post(

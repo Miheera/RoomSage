@@ -1,8 +1,9 @@
 import enum
 import uuid
 from datetime import datetime
+from decimal import Decimal
 
-from sqlalchemy import Boolean, DateTime, Enum, ForeignKey, Integer, JSON, String, Text, func
+from sqlalchemy import Boolean, DateTime, Enum, ForeignKey, Integer, JSON, Numeric, String, Text, func
 from sqlalchemy.orm import DeclarativeBase, Mapped, mapped_column, relationship
 
 
@@ -22,6 +23,7 @@ class TaskType(str, enum.Enum):
     GAUSSIAN_SPLATTING_TRAIN = "GAUSSIAN_SPLATTING_TRAIN"
     SAM_3D_SEGMENTATION = "SAM_3D_SEGMENTATION"
     INSTRUCT_GS2GS_EDIT = "INSTRUCT_GS2GS_EDIT"
+    REDESIGN_2D = "REDESIGN_2D"
 
 
 class Project(Base):
@@ -32,6 +34,7 @@ class Project(Base):
     room_type: Mapped[str | None] = mapped_column(String(80))
     photo_keys: Mapped[list[str]] = mapped_column(JSON, nullable=False, default=list)
     depth_map_s3_key: Mapped[str | None] = mapped_column(String(1024))
+    s3_redesign_preview_key: Mapped[str | None] = mapped_column(String(1024))
     created_at: Mapped[datetime] = mapped_column(
         DateTime(timezone=True), server_default=func.now(), nullable=False
     )
@@ -87,3 +90,25 @@ class Job(Base):
     )
 
     project: Mapped[Project] = relationship(back_populates="jobs")
+
+
+class CatalogProduct(Base):
+    __tablename__ = "catalog_products"
+
+    product_id: Mapped[str] = mapped_column(String(80), primary_key=True)
+    title: Mapped[str] = mapped_column(String(500), nullable=False)
+    category: Mapped[str] = mapped_column(String(80), nullable=False, index=True)
+    theme: Mapped[str] = mapped_column(String(120), nullable=False, index=True)
+    price_inr: Mapped[Decimal] = mapped_column(Numeric(12, 2), nullable=False)
+    dimensions_m: Mapped[list[float]] = mapped_column(JSON, nullable=False)
+    primary_color: Mapped[str] = mapped_column(String(160), nullable=False)
+    primary_material: Mapped[str] = mapped_column(Text, nullable=False)
+    prompt_phrase: Mapped[str] = mapped_column(Text, nullable=False)
+    image_s3_key: Mapped[str] = mapped_column(String(1024), nullable=False, unique=True)
+    buy_url: Mapped[str] = mapped_column(Text, nullable=False)
+    created_at: Mapped[datetime] = mapped_column(
+        DateTime(timezone=True), server_default=func.now(), nullable=False
+    )
+    updated_at: Mapped[datetime] = mapped_column(
+        DateTime(timezone=True), server_default=func.now(), onupdate=func.now(), nullable=False
+    )

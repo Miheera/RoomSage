@@ -1,5 +1,6 @@
 import logging
 import uuid
+from io import BytesIO
 from pathlib import PurePosixPath
 from typing import Annotated
 
@@ -10,7 +11,8 @@ from sqlalchemy.orm import Session
 from config import settings
 from database import get_db
 from models import Project
-from schemas import ProjectCreate, ProjectRead
+from schemas import PhotoQualityFeedback, PhotoUploadResponse, ProjectCreate, ProjectRead
+from services.image_quality_service import image_quality_analyzer
 from services.s3_service import delete_object, upload_fileobj
 
 logger = logging.getLogger(__name__)
@@ -41,12 +43,12 @@ def create_project(
     return project
 
 
-@router.post("/{project_id}/photos", response_model=ProjectRead)
+@router.post("/{project_id}/photos", response_model=PhotoUploadResponse)
 def upload_project_photos(
     project_id: uuid.UUID,
     db: Annotated[Session, Depends(get_db)],
     files: Annotated[list[UploadFile], File(...)],
-) -> Project:
+) -> PhotoUploadResponse:
     if not 5 <= len(files) <= 15:
         raise HTTPException(
             status_code=422,
@@ -87,12 +89,39 @@ def upload_project_photos(
         validated.append((upload, extension, content_type))
 
     uploaded_keys: list[str] = []
+    photo_feedback: list[PhotoQualityFeedback] = []
     try:
         for upload, extension, content_type in validated:
-            object_key = f"{project_id}/raw_photos/{uuid.uuid4().hex}{extension}"
+            image_bytes = upload.file.read(settings.upload_max_bytes + 1)
             upload.file.seek(0)
-            upload_fileobj(upload.file, object_key, content_type)
+            if len(image_bytes) > settings.upload_max_bytes:
+                raise HTTPException(
+                    status_code=413,
+                    detail=f"{upload.filename!r} exceeds the {settings.upload_max_bytes}-byte upload limit.",
+                )
+            format_name = {".jpg": "JPEG", ".jpeg": "JPEG", ".png": "PNG", ".webp": "WEBP"}[extension]
+            try:
+                report = image_quality_analyzer.analyze_and_normalize(image_bytes, format_name)
+            except ValueError as exc:
+                raise HTTPException(status_code=415, detail=f"Could not process {upload.filename!r}: {exc}") from exc
+            object_key = f"{project_id}/raw_photos/{uuid.uuid4().hex}{extension}"
+            upload_fileobj(BytesIO(report.normalized_bytes), object_key, content_type)
             uploaded_keys.append(object_key)
+            photo_feedback.append(PhotoQualityFeedback(
+                filename=upload.filename or "upload",
+                status=report.status,
+                is_blurry=report.is_blurry,
+                lighting_status=report.lighting_status,
+                resolution=(report.width, report.height),
+                feedback_message=report.feedback_message,
+            ))
+    except HTTPException:
+        for object_key in uploaded_keys:
+            try:
+                delete_object(object_key)
+            except (BotoCoreError, ClientError):
+                logger.exception("Could not clean up uploaded object %s", object_key)
+        raise
     except (BotoCoreError, ClientError) as exc:
         logger.exception("S3 photo upload failed for project %s", project_id)
         for object_key in uploaded_keys:
@@ -126,4 +155,9 @@ def upload_project_photos(
             detail="Photos were stored but project metadata could not be saved.",
         )
     db.refresh(project)
-    return project
+    return PhotoUploadResponse(
+        project_id=project_id,
+        total_uploaded=len(photo_feedback),
+        photos=photo_feedback,
+        photo_keys=project.photo_keys,
+    )

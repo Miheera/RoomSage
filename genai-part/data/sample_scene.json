@@ -1,0 +1,13 @@
+{
+  "_comment": "Sample input for demos. Person A's API does not return these fields today: room_type comes from the project, and the rest would come from the user or photo analysis.",
+  "room_type": "living_room",
+  "dimensions": {"length_m": 4.2, "width_m": 3.4, "height_m": 2.8},
+  "objects": [
+    {"label": "blue sofa", "color": "blue", "material": "fabric"},
+    {"label": "white cabinet", "color": "white"},
+    {"label": "floor lamp", "color": "white", "material": "metal"},
+    {"label": "patterned curtain", "material": "cotton"}
+  ],
+  "colors": ["white", "blue"],
+  "materials": ["oak", "fabric"]
+}

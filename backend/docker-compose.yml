@@ -6,7 +6,7 @@ services:
       POSTGRES_USER: roomsage
       POSTGRES_PASSWORD: roomsage
     ports:
-      - "5432:5432"
+      - "5433:5432"
     volumes:
       - postgres_data:/var/lib/postgresql/data
     healthcheck:
@@ -53,7 +53,7 @@ services:
     build:
       context: .
       dockerfile: Dockerfile.gpu
-    command: celery -A tasks.celery_app.celery_app worker --loglevel=INFO
+    command: celery -A tasks.celery_app.celery_app worker --loglevel=INFO --queues=gpu_queue
     gpus: all
     environment:
       DATABASE_URL: postgresql+psycopg://roomsage:roomsage@postgres:5432/roomsage
@@ -81,7 +81,7 @@ services:
         condition: service_completed_successfully
 
   minio:
-    image: minio/minio:latest
+    image: docker.io/pgsty/silo:RELEASE.2026-10-26T00-00-00Z
     command: server /data --console-address ":9001"
     environment:
       MINIO_ROOT_USER: minioadmin
@@ -92,13 +92,13 @@ services:
     volumes:
       - minio_data:/data
     healthcheck:
-      test: ["CMD", "curl", "-f", "http://localhost:9000/minio/health/live"]
+      test: ["CMD", "silo", "healthcheck", "ready"]
       interval: 5s
       timeout: 3s
       retries: 10
 
   minio-init:
-    image: minio/mc:latest
+    image: docker.io/pgsty/mc:RELEASE.2026-10-26T00-00-00Z
     depends_on:
       minio:
         condition: service_healthy

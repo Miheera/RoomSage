@@ -1,0 +1,22 @@
+# Core service. Runs without a GPU; the 2D pipeline falls back to the mock renderer.
+fastapi>=0.115,<1.0
+uvicorn[standard]>=0.30,<1.0
+pydantic>=2.8,<3.0
+pydantic-settings>=2.4,<3.0
+python-multipart>=0.0.9,<1.0
+httpx>=0.27,<1.0
+Pillow>=10.0,<13.0
+numpy>=1.26,<3.0
+
+# Budget optimisation (multiple-choice knapsack)
+pulp[cbc]>=4.0,<5.0
+# Near-duplicate detection in the dataset pipeline
+rapidfuzz>=3.9,<4.0
+
+# Optional LLM providers (LLM_PROVIDER=offline needs neither at runtime)
+anthropic>=0.60
+openai>=1.40,<3.0
+instructor>=1.7,<2.0
+
+# Tests
+pytest>=8.0,<10.0

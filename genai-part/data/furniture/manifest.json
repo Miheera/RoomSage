@@ -1,0 +1,34 @@
+{
+  "built_on": "2026-11-01",
+  "collected": 4093,
+  "duplicates_removed": 730,
+  "untagged_removed": 1561,
+  "total": 1802,
+  "by_source": {
+    "flipkart_promptcloud_2016": 661,
+    "ikea_sa_tidytuesday_2020": 1141
+  },
+  "by_category": {
+    "accessory": 413,
+    "sofa_seating": 181,
+    "curtain": 62,
+    "rug": 11,
+    "wall_decor": 69,
+    "lighting": 20,
+    "storage": 506,
+    "plant": 9,
+    "chair": 221,
+    "table": 239,
+    "bed": 71
+  },
+  "by_verification_status": {
+    "source_dataset": 1802
+  },
+  "with_inr_price": 660,
+  "with_dimensions": 1619,
+  "with_theme_tags": 1802,
+  "with_image": 661,
+  "verification_status_note": {
+    "source_dataset": "Real listing from a dated dataset. Not re-checked against the live site."
+  }
+}
