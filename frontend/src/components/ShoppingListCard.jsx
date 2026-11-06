@@ -1,0 +1,10 @@
+import React, { useState } from 'react';
+import { api } from '../services/api';
+const themes = ['Japandi','Modern Minimalist','Nordic / Scandinavian','Bohemian','Industrial','Modern Indian Contemporary'];
+const inr = value => new Intl.NumberFormat('en-IN',{style:'currency',currency:'INR',maximumFractionDigits:0}).format(value || 0);
+export default function ShoppingListCard({ projectId, onReady }) {
+  const [theme,setTheme]=useState(themes[0]), [cap,setCap]=useState(50000), [list,setList]=useState(null), [busy,setBusy]=useState(false), [error,setError]=useState('');
+  const generate=async()=>{setBusy(true);setError('');try{await api.generateBudget(projectId,theme,Number(cap));const result=await api.getBudget(projectId);setList(result);onReady?.(result);}catch(e){setError(e.message);}finally{setBusy(false);}};
+  const pct=list?Math.min(100,list.total_cost_inr/cap*100):0;
+  return <section className="phase-card"><div className="budget-controls"><label>Design theme<select value={theme} onChange={e=>setTheme(e.target.value)}>{themes.map(t=><option key={t}>{t}</option>)}</select></label><label>Budget cap <b>{inr(cap)}</b><input type="range" min="10000" max="300000" step="5000" value={cap} onChange={e=>setCap(e.target.value)}/><input type="number" min="1" value={cap} onChange={e=>setCap(e.target.value)}/></label><button className="phase-button" disabled={busy} onClick={generate}>{busy?'Building list…':'Find my pieces'}</button></div>{error&&<p className="phase-error">{error}</p>}{list&&<><div className="cost-line"><span>{inr(list.total_cost_inr)} selected</span><span>of {inr(cap)}</span></div><div className="cost-track"><i style={{width:`${pct}%`}}/></div><div className="product-grid">{list.selected_items.map(item=><article className="product-card" key={item.product_id}>{item.image_url&&<img src={item.image_url} alt=""/>}<div><small>{item.category}</small><h3>{item.title}</h3><b>{inr(item.price_inr)}</b><a href={item.buy_url} target="_blank" rel="noreferrer">Shop item ↗</a></div></article>)}</div></>}</section>;
+}

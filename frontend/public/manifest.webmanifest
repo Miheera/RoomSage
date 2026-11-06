@@ -1,0 +1,12 @@
+{
+  "name": "RoomSage Interior Design",
+  "short_name": "RoomSage",
+  "description": "Redesign your space with AI-inspired interiors.",
+  "start_url": "/",
+  "scope": "/",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#09090b",
+  "theme_color": "#09090b",
+  "icons": [{ "src": "/icon.svg", "sizes": "any", "type": "image/svg+xml", "purpose": "any maskable" }]
+}
