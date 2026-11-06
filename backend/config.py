@@ -15,6 +15,12 @@ class Settings(BaseSettings):
     environment: str = "development"
     database_url: str = "postgresql+psycopg://roomsage:roomsage@localhost:5432/roomsage"
     redis_url: str = "redis://localhost:6379/0"
+    gemini_api_key: str = ""
+    meshy_api_key: str = ""
+    mock_meshy: bool = False
+    meshy_local_cache_dir: str = "data/catalog_3d"
+    meshy_poll_interval_seconds: float = 5.0
+    meshy_task_timeout_seconds: float = 1800.0
     cors_origins: list[str] = ["http://localhost:5173"]
     s3_bucket: str = "roomsage"
     aws_region: str = "us-east-1"

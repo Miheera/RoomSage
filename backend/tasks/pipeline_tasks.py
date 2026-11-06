@@ -25,12 +25,14 @@ import yaml
 
 from config import settings
 from database import SessionLocal
-from models import Job, JobStatus, Project, TaskType
+from models import CatalogProduct, Job, JobStatus, Project, TaskType
 from services.depth_service import create_depth_map
 from services.controlnet_service import render_redesign
 from services.job_state import get_redis_client, record_job_state
 from services.s3_service import create_presigned_url, get_s3_client
 from services.segmentation_service import segment_gaussians
+from services.gemini_service import GeminiService
+from services.meshy_service import MeshyService
 from tasks.celery_app import celery_app
 
 logger = logging.getLogger(__name__)
@@ -802,6 +804,92 @@ def reconstruct_project(job_id: str, project_id: str) -> dict[str, str | bool | 
                 logger.exception("Could not release reconstruction lock for project %s", project_id)
         redis_client.close()
         db.close()
+
+
+@celery_app.task(name="roomsage.ingest_photos", acks_late=True, reject_on_worker_lost=True)
+def ingest_photos_task(project_id: str) -> dict[str, str]:
+    """Analyze uploaded room photos and persist the structured scene document in S3."""
+    project_uuid = UUID(project_id)
+    with SessionLocal() as db:
+        project = db.get(Project, project_uuid)
+        if project is None:
+            raise LookupError(f"Project {project_id} does not exist.")
+        photo_keys = list(project.photo_keys or [])
+        if not photo_keys:
+            raise ValueError(f"Project {project_id} has no uploaded photos.")
+        s3 = get_s3_client()
+        image_buffers: list[bytes] = []
+        for key in photo_keys:
+            response = s3.get_object(Bucket=settings.s3_bucket, Key=key)
+            try:
+                image_buffers.append(response["Body"].read())
+            finally:
+                response["Body"].close()
+        scene = GeminiService().analyze_room_photos(image_buffers)
+        scene_key = f"{project_id}/scene.json"
+        s3.put_object(
+            Bucket=settings.s3_bucket,
+            Key=scene_key,
+            Body=scene.model_dump_json(indent=2).encode("utf-8"),
+            ContentType="application/json",
+        )
+        project.scene_s3_key = scene_key
+        db.commit()
+        return {"project_id": project_id, "scene_s3_key": scene_key}
+
+
+@celery_app.task(name="roomsage.generate_catalog_3d_asset", acks_late=True)
+def generate_3d_catalog_asset_task(product_id: str) -> dict[str, str | None]:
+    """Reuse or synthesize one catalog GLB and record its public/cache URL in the result."""
+    with SessionLocal() as db:
+        product = db.get(CatalogProduct, product_id)
+        if product is None:
+            raise LookupError(f"Catalog product {product_id} does not exist.")
+        asset_url = asyncio.run(MeshyService().generate_catalog_3d_asset(
+            product_id=product.product_id,
+            image_url=product.image_url,
+            category=product.category,
+        ))
+        return {"product_id": product_id, "asset_url": asset_url}
+
+
+@celery_app.task(name="roomsage.build_shopping_list", acks_late=True)
+def build_shopping_list_task(project_id: str, theme: str, budget_cap_inr: float) -> dict[str, Any]:
+    """Build a budget-capped shopping list from database catalog records and store it in S3."""
+    project_uuid = UUID(project_id)
+    with SessionLocal() as db:
+        project = db.get(Project, project_uuid)
+        if project is None:
+            raise LookupError(f"Project {project_id} does not exist.")
+        catalog_rows = db.query(CatalogProduct).all()
+        catalog = [
+            {
+                "product_id": item.product_id,
+                "title": item.title,
+                "category": item.category,
+                "theme": item.theme,
+                "price_inr": float(item.price_inr),
+                "buy_url": item.buy_url,
+                "image_url": item.image_url,
+            }
+            for item in catalog_rows
+        ]
+        result = GeminiService().generate_budget_shopping_list(
+            project_id=project_id,
+            theme=theme,
+            budget_cap_inr=budget_cap_inr,
+            catalog_items=catalog,
+        )
+        shopping_key = f"{project_id}/shopping_list.json"
+        get_s3_client().put_object(
+            Bucket=settings.s3_bucket,
+            Key=shopping_key,
+            Body=result.model_dump_json(indent=2).encode("utf-8"),
+            ContentType="application/json",
+        )
+        project.shopping_list_s3_key = shopping_key
+        db.commit()
+        return {"project_id": project_id, "shopping_list_s3_key": shopping_key, **result.model_dump()}
 
 
 @celery_app.task(name="roomsage.run_2d_redesign", acks_late=True, reject_on_worker_lost=True)

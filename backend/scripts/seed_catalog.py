@@ -1,6 +1,6 @@
 """Validate isolated catalog PNGs in S3 and upsert the furniture CSV into PostgreSQL.
 
-Run from ``backend`` after applying ``migrations/0004_catalog_products.sql``:
+Run from ``backend`` after applying migrations 0004 and 0005:
 
     python scripts/seed_catalog.py
 """
@@ -8,7 +8,6 @@ Run from ``backend`` after applying ``migrations/0004_catalog_products.sql``:
 from __future__ import annotations
 
 import argparse
-import csv
 import json
 import logging
 import math
@@ -16,6 +15,7 @@ from decimal import Decimal, InvalidOperation
 from pathlib import Path
 from typing import Any
 
+import pandas as pd
 from botocore.exceptions import BotoCoreError, ClientError
 from sqlalchemy.dialects.postgresql import insert
 from sqlalchemy.exc import SQLAlchemyError
@@ -27,7 +27,7 @@ from models import CatalogProduct
 from services.s3_service import get_s3_client
 
 LOGGER = logging.getLogger("seed_catalog")
-DEFAULT_CSV = Path(__file__).resolve().parents[1] / "data" / "furniture_catalog.csv"
+DEFAULT_CSV = Path(__file__).resolve().parents[1] / "data" / "furniture_catalog_with_images.csv"
 REQUIRED_COLUMNS = {
     "product_id",
     "title",
@@ -40,6 +40,7 @@ REQUIRED_COLUMNS = {
     "prompt_phrase",
     "image_s3_key",
     "buy_url",
+    "image_url",
 }
 IMAGE_PREFIX = "catalog/isolated/"
 
@@ -104,19 +105,21 @@ def _parse_row(row: dict[str, str], line_number: int) -> dict[str, Any]:
         "prompt_phrase": _required(row, "prompt_phrase", line_number),
         "image_s3_key": image_key,
         "buy_url": _required(row, "buy_url", line_number),
+        "image_url": row.get("image_url", "").strip() or None,
     }
 
 
 def read_catalog(csv_path: Path) -> list[dict[str, Any]]:
     if not csv_path.is_file():
         raise CatalogSeedError(f"Catalog CSV does not exist: {csv_path}")
-    with csv_path.open("r", newline="", encoding="utf-8-sig") as source:
-        reader = csv.DictReader(source)
-        columns = set(reader.fieldnames or [])
-        missing_columns = sorted(REQUIRED_COLUMNS - columns)
-        if missing_columns:
-            raise CatalogSeedError(f"Catalog CSV is missing columns: {', '.join(missing_columns)}")
-        records = [_parse_row(row, index) for index, row in enumerate(reader, start=2)]
+    frame = pd.read_csv(csv_path, dtype=str, keep_default_na=False)
+    missing_columns = sorted(REQUIRED_COLUMNS - set(frame.columns))
+    if missing_columns:
+        raise CatalogSeedError(f"Catalog CSV is missing columns: {', '.join(missing_columns)}")
+    records = [
+        _parse_row({key: str(value) for key, value in row.items()}, index)
+        for index, row in enumerate(frame.to_dict(orient="records"), start=2)
+    ]
     if not records:
         raise CatalogSeedError("Catalog CSV contains no product rows.")
     ids = [record["product_id"] for record in records]
@@ -175,13 +178,24 @@ def upsert_catalog(records: list[dict[str, Any]]) -> int:
 def main() -> int:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--csv", type=Path, default=DEFAULT_CSV, help="Catalog CSV path.")
+    parser.add_argument(
+        "--skip-s3-check",
+        action="store_true",
+        help="Seed PostgreSQL without checking that image_s3_key objects exist in MinIO/S3.",
+    )
     args = parser.parse_args()
     logging.basicConfig(level=logging.INFO, format="%(levelname)s %(message)s")
 
     records = read_catalog(args.csv)
     LOGGER.info("Validated %d catalog rows from %s", len(records), args.csv)
-    verify_s3_images(records)
-    LOGGER.info("Verified all %d isolated PNGs in s3://%s/%s", len(records), settings.s3_bucket, IMAGE_PREFIX)
+    if args.skip_s3_check:
+        LOGGER.warning("Skipping catalog image existence checks; image_s3_key objects may not exist yet.")
+    else:
+        verify_s3_images(records)
+        LOGGER.info(
+            "Verified all %d isolated PNGs in s3://%s/%s",
+            len(records), settings.s3_bucket, IMAGE_PREFIX,
+        )
     count = upsert_catalog(records)
     LOGGER.info("Upserted %d catalog products into PostgreSQL", count)
     return 0

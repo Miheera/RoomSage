@@ -35,6 +35,8 @@ class Project(Base):
     photo_keys: Mapped[list[str]] = mapped_column(JSON, nullable=False, default=list)
     depth_map_s3_key: Mapped[str | None] = mapped_column(String(1024))
     s3_redesign_preview_key: Mapped[str | None] = mapped_column(String(1024))
+    scene_s3_key: Mapped[str | None] = mapped_column(String(1024))
+    shopping_list_s3_key: Mapped[str | None] = mapped_column(String(1024))
     created_at: Mapped[datetime] = mapped_column(
         DateTime(timezone=True), server_default=func.now(), nullable=False
     )
@@ -106,6 +108,7 @@ class CatalogProduct(Base):
     prompt_phrase: Mapped[str] = mapped_column(Text, nullable=False)
     image_s3_key: Mapped[str] = mapped_column(String(1024), nullable=False, unique=True)
     buy_url: Mapped[str] = mapped_column(Text, nullable=False)
+    image_url: Mapped[str | None] = mapped_column(Text, nullable=True)
     created_at: Mapped[datetime] = mapped_column(
         DateTime(timezone=True), server_default=func.now(), nullable=False
     )

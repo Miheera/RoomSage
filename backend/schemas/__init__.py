@@ -11,6 +11,12 @@ from schemas.integration import (
     JobExecutionMetrics,
     Viewer3DState,
 )
+from schemas.gemini import (
+    RefinedDesignPrompt,
+    RoomSceneAnalysis,
+    ShoppingListItem,
+    ShoppingListResponse,
+)
 
 
 class ProjectCreate(BaseModel):
@@ -113,5 +119,9 @@ __all__ = [
     "PhotoQualityFeedback",
     "PhotoUploadResponse",
     "RedesignJobRequest",
+    "RefinedDesignPrompt",
+    "RoomSceneAnalysis",
+    "ShoppingListItem",
+    "ShoppingListResponse",
     "Viewer3DState",
 ]

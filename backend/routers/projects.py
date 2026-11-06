@@ -6,14 +6,17 @@ from typing import Annotated
 
 from botocore.exceptions import BotoCoreError, ClientError
 from fastapi import APIRouter, Depends, File, HTTPException, UploadFile, status
+from pydantic import BaseModel, Field
 from sqlalchemy.orm import Session
 
 from config import settings
 from database import get_db
 from models import Project
 from schemas import PhotoQualityFeedback, PhotoUploadResponse, ProjectCreate, ProjectRead
+from services.gemini_service import GeminiService
 from services.image_quality_service import image_quality_analyzer
-from services.s3_service import delete_object, upload_fileobj
+from services.s3_service import create_presigned_url, delete_object, get_s3_client, upload_fileobj
+from tasks.pipeline_tasks import build_shopping_list_task, ingest_photos_task
 
 logger = logging.getLogger(__name__)
 router = APIRouter(prefix="/projects", tags=["projects"])
@@ -27,6 +30,34 @@ _ALLOWED_IMAGE_TYPES = {
         lambda data: len(data) >= 12 and data[:4] == b"RIFF" and data[8:12] == b"WEBP",
     ),
 }
+
+
+class BudgetRequest(BaseModel):
+    budget_cap_inr: float = Field(gt=0)
+    theme: str = Field(min_length=1, max_length=120)
+
+
+class ChatRequest(BaseModel):
+    message: str = Field(min_length=1, max_length=2000)
+    image_s3_key: str | None = None
+
+
+def _read_json_artifact(key: str) -> dict:
+    try:
+        response = get_s3_client().get_object(Bucket=settings.s3_bucket, Key=key)
+        try:
+            import json
+            return json.loads(response["Body"].read())
+        finally:
+            response["Body"].close()
+    except ClientError as exc:
+        if exc.response.get("Error", {}).get("Code") in {"NoSuchKey", "404", "NotFound"}:
+            raise HTTPException(status_code=404, detail="Artifact is not ready yet.") from exc
+        logger.exception("Could not read artifact %s", key)
+        raise HTTPException(status_code=502, detail="Could not read artifact from storage.") from exc
+    except BotoCoreError as exc:
+        logger.exception("Could not connect to object storage for %s", key)
+        raise HTTPException(status_code=502, detail="Could not connect to artifact storage.") from exc
 
 
 @router.post("", response_model=ProjectRead, status_code=status.HTTP_201_CREATED)
@@ -155,9 +186,94 @@ def upload_project_photos(
             detail="Photos were stored but project metadata could not be saved.",
         )
     db.refresh(project)
+    try:
+        ingest_photos_task.delay(str(project.id))
+    except Exception as exc:
+        logger.exception("Could not enqueue room photo analysis for project %s", project.id)
+        raise HTTPException(
+            status_code=503,
+            detail="Photos were uploaded, but room analysis could not be queued. Retry the upload or contact support.",
+        ) from exc
     return PhotoUploadResponse(
         project_id=project_id,
         total_uploaded=len(photo_feedback),
         photos=photo_feedback,
         photo_keys=project.photo_keys,
     )
+
+
+@router.post("/{project_id}/budget", status_code=status.HTTP_202_ACCEPTED)
+def request_budget_shopping_list(
+    project_id: uuid.UUID,
+    payload: BudgetRequest,
+    db: Annotated[Session, Depends(get_db)],
+) -> dict[str, str]:
+    if db.get(Project, project_id) is None:
+        raise HTTPException(status_code=404, detail="Project not found.")
+    try:
+        task = build_shopping_list_task.delay(
+            str(project_id), payload.theme.strip(), payload.budget_cap_inr
+        )
+    except Exception as exc:
+        logger.exception("Could not queue budget planning for project %s", project_id)
+        raise HTTPException(status_code=503, detail="Budget planning could not be queued.") from exc
+    return {"project_id": str(project_id), "task_id": task.id, "status": "QUEUED"}
+
+
+@router.get("/{project_id}/scene")
+def get_project_scene(
+    project_id: uuid.UUID,
+    db: Annotated[Session, Depends(get_db)],
+) -> dict:
+    project = db.get(Project, project_id)
+    if project is None:
+        raise HTTPException(status_code=404, detail="Project not found.")
+    if not project.scene_s3_key:
+        raise HTTPException(status_code=404, detail="Room scene analysis is not ready yet.")
+    return _read_json_artifact(project.scene_s3_key)
+
+
+@router.get("/{project_id}/budget")
+def get_project_budget(
+    project_id: uuid.UUID,
+    db: Annotated[Session, Depends(get_db)],
+) -> dict:
+    project = db.get(Project, project_id)
+    if project is None:
+        raise HTTPException(status_code=404, detail="Project not found.")
+    if not project.shopping_list_s3_key:
+        raise HTTPException(status_code=404, detail="Budget shopping list is not ready yet.")
+    return _read_json_artifact(project.shopping_list_s3_key)
+
+
+@router.post("/{project_id}/chat")
+def refine_project_design(
+    project_id: uuid.UUID,
+    payload: ChatRequest,
+    db: Annotated[Session, Depends(get_db)],
+) -> dict[str, str | None]:
+    project = db.get(Project, project_id)
+    if project is None:
+        raise HTTPException(status_code=404, detail="Project not found.")
+    if payload.image_s3_key and payload.image_s3_key not in {
+        project.s3_redesign_preview_key,
+        project.depth_map_s3_key,
+        *project.photo_keys,
+    }:
+        raise HTTPException(status_code=400, detail="image_s3_key does not belong to this project.")
+    try:
+        refinement = GeminiService().chat_refinement(str(project_id), payload.message)
+        preview_url = (
+            create_presigned_url(project.s3_redesign_preview_key)
+            if project.s3_redesign_preview_key
+            else None
+        )
+    except Exception as exc:
+        logger.exception("Gemini chat refinement failed for project %s", project_id)
+        raise HTTPException(status_code=502, detail="Design refinement is temporarily unavailable.") from exc
+    return {
+        "project_id": str(project_id),
+        "reply": refinement.reply,
+        "refined_prompt": refinement.refined_prompt,
+        "preview_image_url": preview_url,
+    }
