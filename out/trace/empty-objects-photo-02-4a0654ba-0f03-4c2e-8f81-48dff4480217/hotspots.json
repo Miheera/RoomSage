@@ -1,0 +1,61 @@
+{
+  "items": [
+    {
+      "catalog_item_id": "PAINT-JAP-087",
+      "visible": true,
+      "x": null,
+      "y": null,
+      "visibility_reason": null
+    },
+    {
+      "catalog_item_id": "FLOOR-JAP-009",
+      "visible": true,
+      "x": null,
+      "y": null,
+      "visibility_reason": null
+    },
+    {
+      "catalog_item_id": "FURN-JAP-001",
+      "visible": true,
+      "x": 0.69271,
+      "y": 0.78516,
+      "visibility_reason": null
+    },
+    {
+      "catalog_item_id": "RUG-JAP-006",
+      "visible": true,
+      "x": 0.44271,
+      "y": 0.83398,
+      "visibility_reason": null
+    },
+    {
+      "catalog_item_id": "DECOR-JAP-008",
+      "visible": true,
+      "x": 0.83854,
+      "y": 0.67188,
+      "visibility_reason": null
+    },
+    {
+      "catalog_item_id": "CHAIR-JAP-042",
+      "visible": true,
+      "x": 0.92188,
+      "y": 0.83008,
+      "visibility_reason": null
+    },
+    {
+      "catalog_item_id": "FURN-JAP-004",
+      "visible": true,
+      "x": 0.75521,
+      "y": 0.66211,
+      "visibility_reason": null
+    },
+    {
+      "catalog_item_id": "LIGHT-JAP-007",
+      "visible": true,
+      "x": 0.75521,
+      "y": 0.60742,
+      "visibility_reason": null
+    }
+  ],
+  "unlisted_furniture": []
+}

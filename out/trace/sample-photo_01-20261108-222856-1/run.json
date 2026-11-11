@@ -1,0 +1,6 @@
+{
+  "status": "failed",
+  "error": "Could not load or run ADE20K segmentation model 'openmmlab/upernet-convnext-small': 'Image' object has no attribute 'astype'",
+  "trace_errors": [],
+  "stage_count": 1
+}

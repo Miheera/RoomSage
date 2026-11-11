@@ -1,0 +1,22 @@
+{
+  "ade20k_segmentation": {
+    "model_id": "openmmlab/upernet-convnext-small",
+    "loaded_on": "cpu",
+    "execution_on": "cpu"
+  },
+  "surface_edits": {
+    "model_id": "OpenCV LAB + perspective warp",
+    "loaded_on": "n/a",
+    "execution_on": "cpu"
+  },
+  "background_removal": {
+    "model_id": "rembg/u2net",
+    "loaded_on": "not_loaded",
+    "execution_on": "not_run (no catalog object items in this trace)"
+  },
+  "catalog_placement": {
+    "model_id": "Pillow compositing",
+    "loaded_on": "n/a",
+    "execution_on": "surface-only; no catalog objects supplied"
+  }
+}

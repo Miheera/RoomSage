@@ -1,0 +1,34 @@
+{
+  "pipeline": "ade20k_mask_based",
+  "segmentation": {
+    "model_id": "openmmlab/upernet-convnext-small",
+    "license": "MIT",
+    "model_card": "https://huggingface.co/openmmlab/upernet-convnext-small",
+    "furniture_percent": 1.53,
+    "baseboard_method": "wall_floor_boundary_strip",
+    "baseboard_width_px": 12,
+    "door_protection_dilation_px": 24
+  },
+  "surface_edits": {
+    "wall": {
+      "applied": true,
+      "color_rgb": [
+        205,
+        194,
+        170
+      ],
+      "color_hex": "#CDC2AA",
+      "source_color": "Sugared Nut",
+      "palette": "Warm Earth"
+    },
+    "floor": {
+      "applied": true,
+      "method": "perspective_tiled_texture_with_original_luminance",
+      "fallback": false,
+      "reason": null,
+      "tile_width_px": 35,
+      "tile_width_fraction": 0.045,
+      "texture_contrast": 0.35
+    }
+  }
+}

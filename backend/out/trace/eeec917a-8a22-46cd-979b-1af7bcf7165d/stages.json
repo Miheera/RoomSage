@@ -1,0 +1,38 @@
+[
+  {
+    "stage": "01_input.png",
+    "file": "/app/out/trace/eeec917a-8a22-46cd-979b-1af7bcf7165d/01_input.png",
+    "seconds": 0,
+    "peak_allocated_vram_mb": null,
+    "peak_reserved_vram_mb": null,
+    "model_id": "Pillow image decode; room photo normalization occurred at upload",
+    "device": "cpu"
+  },
+  {
+    "stage": "02_depth.png",
+    "file": "/app/out/trace/eeec917a-8a22-46cd-979b-1af7bcf7165d/02_depth.png",
+    "seconds": 7.731911639999453,
+    "peak_allocated_vram_mb": 8.125,
+    "peak_reserved_vram_mb": 20.0,
+    "model_id": "depth-anything/Depth-Anything-V2-Small-hf",
+    "device": "cpu"
+  },
+  {
+    "stage": "03_furniture_mask.png",
+    "file": "/app/out/trace/eeec917a-8a22-46cd-979b-1af7bcf7165d/03_furniture_mask.png",
+    "seconds": 25.694810369999686,
+    "peak_allocated_vram_mb": 8.125,
+    "peak_reserved_vram_mb": 20.0,
+    "model_id": "facebook/detr-resnet-50-dc5-panoptic",
+    "device": "cpu"
+  },
+  {
+    "stage": "04_cleared.png",
+    "file": "/app/out/trace/eeec917a-8a22-46cd-979b-1af7bcf7165d/04_cleared.png",
+    "seconds": 274.8858194850018,
+    "peak_allocated_vram_mb": 327.3466796875,
+    "peak_reserved_vram_mb": 348.0,
+    "model_id": "stable-diffusion-v1-5/stable-diffusion-inpainting",
+    "device": "cuda:0 (CPU offload)"
+  }
+]

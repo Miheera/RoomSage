@@ -1,0 +1,3 @@
+ALTER TABLE design_items
+    ADD COLUMN IF NOT EXISTS is_essential BOOLEAN NOT NULL DEFAULT FALSE,
+    ADD COLUMN IF NOT EXISTS visibility_reason TEXT;

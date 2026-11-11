@@ -1,0 +1,72 @@
+[
+  {
+    "stage": "01_input.png",
+    "file": "/app/out/trace/a498a073-792a-446d-9811-b6125c2b2a65/01_input.png",
+    "seconds": 0,
+    "peak_allocated_vram_mb": null,
+    "peak_reserved_vram_mb": null,
+    "model_id": "Pillow image decode; room photo normalization occurred at upload",
+    "phash_distance_from_previous": null,
+    "differs_from_previous": false
+  },
+  {
+    "stage": "02_depth.png",
+    "file": "/app/out/trace/a498a073-792a-446d-9811-b6125c2b2a65/02_depth.png",
+    "seconds": 8.263668367000037,
+    "peak_allocated_vram_mb": 0.0,
+    "peak_reserved_vram_mb": 0.0,
+    "model_id": "depth-anything/Depth-Anything-V2-Small-hf",
+    "phash_distance_from_previous": 24,
+    "differs_from_previous": true
+  },
+  {
+    "stage": "03_furniture_mask.png",
+    "file": "/app/out/trace/a498a073-792a-446d-9811-b6125c2b2a65/03_furniture_mask.png",
+    "seconds": 47.532173461999946,
+    "peak_allocated_vram_mb": 0.0,
+    "peak_reserved_vram_mb": 0.0,
+    "model_id": "facebook/detr-resnet-50-dc5-panoptic",
+    "phash_distance_from_previous": 31,
+    "differs_from_previous": true
+  },
+  {
+    "stage": "04_cleared.png",
+    "file": "/app/out/trace/a498a073-792a-446d-9811-b6125c2b2a65/04_cleared.png",
+    "seconds": 0,
+    "peak_allocated_vram_mb": null,
+    "peak_reserved_vram_mb": null,
+    "model_id": "not run: no furniture mask",
+    "phash_distance_from_previous": 31,
+    "differs_from_previous": true
+  },
+  {
+    "stage": "05_restyled.png",
+    "file": "/app/out/trace/a498a073-792a-446d-9811-b6125c2b2a65/05_restyled.png",
+    "seconds": 975.758460582,
+    "peak_allocated_vram_mb": 547.60693359375,
+    "peak_reserved_vram_mb": 688.0,
+    "model_id": "facebook/detr-resnet-50-dc5-panoptic, stable-diffusion-v1-5/stable-diffusion-v1-5 + lllyasviel/sd-controlnet-depth",
+    "phash_distance_from_previous": 10,
+    "differs_from_previous": true
+  },
+  {
+    "stage": "06_placed.png",
+    "file": "/app/out/trace/a498a073-792a-446d-9811-b6125c2b2a65/06_placed.png",
+    "seconds": 7.776575539999612,
+    "peak_allocated_vram_mb": 8.125,
+    "peak_reserved_vram_mb": 20.0,
+    "model_id": "Pillow/OpenCV catalog cutout and placement",
+    "phash_distance_from_previous": 6,
+    "differs_from_previous": true
+  },
+  {
+    "stage": "07_final.png",
+    "file": "/app/out/trace/a498a073-792a-446d-9811-b6125c2b2a65/07_final.png",
+    "seconds": 0.07376508900006229,
+    "peak_allocated_vram_mb": 8.125,
+    "peak_reserved_vram_mb": 20.0,
+    "model_id": "OpenCV DCT perceptual hash",
+    "phash_distance_from_previous": 0,
+    "differs_from_previous": false
+  }
+]

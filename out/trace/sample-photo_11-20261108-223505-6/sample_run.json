@@ -1,0 +1,66 @@
+{
+  "photo": "photo_11.jpg",
+  "layout": "corner window room",
+  "lighting_profile": "bright natural light",
+  "mean_input_luminance_0_255": 200.72,
+  "seconds": 5.612,
+  "provider": "huggingface",
+  "model_id": "openmmlab/upernet-convnext-small",
+  "model_device": "cpu",
+  "cuda_available": true,
+  "cuda_device": "NVIDIA GeForce RTX 3050 Laptop GPU",
+  "furniture_guard": "passed",
+  "render_metadata": {
+    "pipeline": "ade20k_mask_based",
+    "segmentation": {
+      "model_id": "openmmlab/upernet-convnext-small",
+      "license": "MIT",
+      "model_card": "https://huggingface.co/openmmlab/upernet-convnext-small",
+      "furniture_percent": 2.35
+    },
+    "surface_edits": {
+      "wall": {
+        "applied": true,
+        "color_rgb": [
+          160,
+          174,
+          145
+        ]
+      },
+      "floor": {
+        "applied": true,
+        "method": "perspective_tiled_texture_with_original_luminance",
+        "fallback": false,
+        "reason": null
+      }
+    }
+  },
+  "selected_surface_items": [
+    {
+      "id": "audit-paint-sage",
+      "name": "Sage wall finish (surface test)",
+      "role": "paint"
+    },
+    {
+      "id": "audit-floor-oak",
+      "name": "Oak plank texture (surface test)",
+      "role": "flooring"
+    }
+  ],
+  "hotspots": [
+    {
+      "catalog_item_id": "audit-paint-sage",
+      "visible": true,
+      "x": null,
+      "y": null,
+      "visibility_reason": null
+    },
+    {
+      "catalog_item_id": "audit-floor-oak",
+      "visible": true,
+      "x": null,
+      "y": null,
+      "visibility_reason": null
+    }
+  ]
+}

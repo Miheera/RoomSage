@@ -1,0 +1,39 @@
+{
+  "prompt": "Match the existing room lighting, contact shadow, and floor contact around the placed item; preserve the item and room surfaces.",
+  "strength": 0.3,
+  "ssim_threshold": 0.6,
+  "seconds": 57.311671600007685,
+  "items": [
+    {
+      "catalog_item_id": "FURN-JAP-001",
+      "ssim": 0.782173096215636,
+      "fallback": false
+    },
+    {
+      "catalog_item_id": "RUG-JAP-006",
+      "ssim": 0.8065285924976072,
+      "fallback": false
+    },
+    {
+      "catalog_item_id": "DECOR-JAP-008",
+      "ssim": 0.8443987045290563,
+      "fallback": false
+    },
+    {
+      "catalog_item_id": "CHAIR-JAP-042",
+      "ssim": 0.8692086004738567,
+      "fallback": false
+    },
+    {
+      "catalog_item_id": "FURN-JAP-004",
+      "ssim": 0.7924287004197381,
+      "fallback": false
+    },
+    {
+      "catalog_item_id": "LIGHT-JAP-007",
+      "ssim": 0.9466674858535886,
+      "fallback": false
+    }
+  ],
+  "fallbacks": []
+}

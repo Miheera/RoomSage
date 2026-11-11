@@ -1,5 +1,4 @@
 import asyncio
-from io import BytesIO
 import json
 import logging
 import math
@@ -25,15 +24,15 @@ import yaml
 
 from config import settings
 from database import SessionLocal
-from models import CatalogProduct, Job, JobStatus, Project, TaskType
+from models import CatalogProduct, Design, DesignItem, Job, JobStatus, Project, Room, RoomPhoto, TaskType
 from services.depth_service import create_depth_map
-from services.controlnet_service import render_redesign
 from services.job_state import get_redis_client, record_job_state
 from services.s3_service import create_presigned_url, get_s3_client
 from services.segmentation_service import segment_gaussians
 from services.gemini_service import GeminiService
+from services.quota_hooks import check_generation_quota
 from services.meshy_service import MeshyService
-from tasks.celery_app import celery_app
+from tasks.celery_app import celery_app, render_celery_app
 
 logger = logging.getLogger(__name__)
 
@@ -45,8 +44,6 @@ EDIT_ASSETS_PREFIX = "edit_assets"
 MASK_PROPERTY_NAMES = ("mask_id", "sam_mask_id", "cluster_id")
 MASKED_VALUE_ERROR = "PLY does not contain a supported SAM mask/cluster ID property."
 STEP_RE = re.compile(r"\bStep\s+(\d+)\s*/\s*(\d+)\b", re.IGNORECASE)
-
-
 def _signal_process_tree(process: subprocess.Popen[str], sig: int) -> None:
     kill_process_group = getattr(os, "killpg", None)
     if callable(kill_process_group):
@@ -838,6 +835,46 @@ def ingest_photos_task(project_id: str) -> dict[str, str]:
         return {"project_id": project_id, "scene_s3_key": scene_key}
 
 
+@celery_app.task(
+    name="roomsage.generate_redesign_preview",
+    acks_late=True,
+    reject_on_worker_lost=True,
+)
+def generate_redesign_preview_task(project_id: str, prompt: str) -> str:
+    """Render a chat refinement on the GPU worker and persist its PNG preview."""
+    project_uuid = UUID(project_id)
+    with SessionLocal() as db:
+        project = db.get(Project, project_uuid)
+        if project is None:
+            raise LookupError(f"Project {project_id} does not exist.")
+
+        depth_map: bytes | None = None
+        if project.depth_map_s3_key:
+            depth_object = get_s3_client().get_object(
+                Bucket=settings.s3_bucket,
+                Key=project.depth_map_s3_key,
+            )
+            body = depth_object["Body"]
+            try:
+                depth_map = body.read()
+            finally:
+                body.close()
+
+        from services.redesign_service import RedesignService
+
+        preview_bytes = RedesignService().generate_redesign(prompt, depth_map)
+        preview_key = f"projects/{project_id}/previews/{uuid4().hex}.png"
+        get_s3_client().put_object(
+            Bucket=settings.s3_bucket,
+            Key=preview_key,
+            Body=preview_bytes,
+            ContentType="image/png",
+        )
+        project.s3_redesign_preview_key = preview_key
+        db.commit()
+        return preview_key
+
+
 @celery_app.task(name="roomsage.generate_catalog_3d_asset", acks_late=True)
 def generate_3d_catalog_asset_task(product_id: str) -> dict[str, str | None]:
     """Reuse or synthesize one catalog GLB and record its public/cache URL in the result."""
@@ -892,59 +929,251 @@ def build_shopping_list_task(project_id: str, theme: str, budget_cap_inr: float)
         return {"project_id": project_id, "shopping_list_s3_key": shopping_key, **result.model_dump()}
 
 
-@celery_app.task(name="roomsage.run_2d_redesign", acks_late=True, reject_on_worker_lost=True)
-def run_2d_redesign_task(job_id: str, project_id: str, prompt: str) -> dict[str, str]:
+@render_celery_app.task(
+    name="roomsage.render_catalog_design", acks_late=True, reject_on_worker_lost=True,
+    soft_time_limit=settings.catalog_render_timeout_seconds,
+    time_limit=settings.catalog_render_timeout_seconds + 30,
+)
+def run_catalog_design_task(job_id: str, room_id: str, design_id: str) -> dict[str, str]:
+    """Render a design exclusively from its persisted catalog DesignItems."""
     db: Session = SessionLocal()
     redis_client: Redis = get_redis_client()
     job: Job | None = None
+    design: Design | None = None
+    candidate_key: str | None = None
     try:
-        project_uuid, job_uuid = UUID(project_id), UUID(job_id)
+        room_uuid, design_uuid, job_uuid = UUID(room_id), UUID(design_id), UUID(job_id)
         job = db.get(Job, job_uuid)
-        project = db.get(Project, project_uuid)
-        if job is None or project is None or job.project_id != project_uuid:
-            raise LookupError("Redesign job or project was not found.")
-        if job.task_type != TaskType.REDESIGN_2D:
-            raise ValueError("Job is not a 2D redesign task.")
-        expected_depth_map_key = f"{project_uuid}/outputs/depth_map.png"
-        if project.depth_map_s3_key != expected_depth_map_key or not project.photo_keys:
-            raise ValueError("Project is missing its depth map or primary room photo.")
+        room = db.get(Room, room_uuid)
+        design = db.get(Design, design_uuid)
+        project = db.get(Project, room.project_id) if room else None
+        photo = db.query(RoomPhoto).filter(RoomPhoto.room_id == room_uuid).order_by(RoomPhoto.order).first()
+        if (job is None or room is None or project is None or design is None or photo is None
+                or job.room_id != room_uuid or job.design_id != design_uuid
+                or design.room_id != room_uuid or job.task_type != TaskType.REDESIGN_2D):
+            raise LookupError("Render job, room, photo, or design was not found.")
+        if job.status in (JobStatus.FAILED, JobStatus.COMPLETED):
+            logger.info("Ignoring redelivered terminal catalog render job %s", job.id)
+            return {"job_id": job_id, "design_id": design_id, "status": job.status.value}
 
-        _update_job(db, job, redis_client, status=JobStatus.PROCESSING, progress=5,
-                    message="Downloading room photo and depth map.")
+        rows = db.query(DesignItem, CatalogProduct).join(
+            CatalogProduct, CatalogProduct.product_id == DesignItem.catalog_item_id,
+        ).filter(DesignItem.design_id == design.id).all()
+        if not rows:
+            raise ValueError("The design has no catalog items to render.")
+        manifest: list[dict[str, Any]] = []
         s3 = get_s3_client()
-        def download(key: str) -> bytes:
-            response = s3.get_object(Bucket=settings.s3_bucket, Key=key)
-            try:
-                return response["Body"].read()
-            finally:
-                response["Body"].close()
+        for design_item, product in rows:
+            if not product.selectable or product.kind not in {"object", "surface"}:
+                raise ValueError(f"Catalog item {product.product_id} is no longer selectable.")
+            if room.type not in (product.room_types or []):
+                raise ValueError(f"Catalog item {product.product_id} does not fit {room.type}.")
+            manifest.append({
+                "catalog_item_id": product.product_id,
+                "title": product.title,
+                "role": design_item.role,
+                "kind": product.kind,
+                "qty": design_item.qty,
+                "is_essential": design_item.is_essential,
+                "prompt_phrase": product.prompt_phrase,
+                "primary_color": product.primary_color,
+                "primary_material": product.primary_material,
+                "dimensions_m": product.dimensions_m,
+            })
 
-        image_bytes = download(project.photo_keys[0])
-        depth_bytes = download(expected_depth_map_key)
-        _update_job(db, job, redis_client, status=JobStatus.PROCESSING, progress=20,
-                    message="Rendering the ControlNet redesign preview.")
-        preview = render_redesign(image_bytes, depth_bytes, prompt)
-        preview_key = f"{project_uuid}/outputs/redesign_preview.png"
-        s3.upload_fileobj(BytesIO(preview), settings.s3_bucket, preview_key,
-                          ExtraArgs={"ContentType": "image/png"})
-        project.s3_redesign_preview_key = preview_key
-        job.output_key = preview_key
+        _update_job(db, job, redis_client, status=JobStatus.PROCESSING, progress=25,
+                    message="Preparing the selected catalog design for rendering.")
+        # Quotas are deliberately not enforced in this phase; this is the insertion point.
+        check_generation_quota(project.user_id)
+        surfaces = " ".join(
+            f"{item['role']} ({item['title']}): {item['prompt_phrase']}; "
+            f"color={item.get('primary_color') or ''}; material={item.get('primary_material') or ''}"
+            for item in manifest if item["kind"] == "surface"
+        )
+        prompt = (
+            "Photorealistically restyle the room's architectural surfaces while preserving its "
+            "geometry, camera angle, walls, windows, doors, ceiling, and floor plan. "
+            f"Style: {design.style}. Palette: {design.palette}. "
+            "Apply these selected wall and floor finishes: "
+            f"{surfaces or 'Keep the existing room finishes.'}"
+        )
+        from services.image_generation_service import ImageGenerationService, _hf_load_kwargs
+
+        if settings.image_provider in {"huggingface", "remote"}:
+            # Validate every configured snapshot before reading photos or starting
+            # inference so offline workers fail promptly when their cache is incomplete.
+            for model_id in settings.image_model_ids.values():
+                _hf_load_kwargs(model_id)
+
+        project_depth: bytes | None = None
+        if project.depth_map_s3_key:
+            depth_object = s3.get_object(
+                Bucket=settings.s3_bucket,
+                Key=project.depth_map_s3_key,
+            )
+            try:
+                project_depth = depth_object["Body"].read()
+            finally:
+                depth_object["Body"].close()
+
+        photo_object = s3.get_object(Bucket=settings.s3_bucket, Key=photo.url)
+        try:
+            room_photo_bytes = photo_object["Body"].read()
+        finally:
+            photo_object["Body"].close()
+
+        image_service = ImageGenerationService()
+        render_items = list(manifest)
+        if settings.image_provider in {"huggingface", "remote"}:
+            from services.catalog_image_storage import catalog_image_exists, get_catalog_image
+
+            for item, (_, product) in zip(render_items, rows, strict=True):
+                if product.kind == "object":
+                    reference_key = product.reference_image_s3_key or product.image_s3_key
+                    item["reference_image_bytes"] = get_catalog_image(reference_key)
+                elif item["role"] == "flooring":
+                    texture_key = product.image_s3_key
+                    if not catalog_image_exists(texture_key) and product.reference_image_s3_key:
+                        texture_key = product.reference_image_s3_key
+                    item["floor_texture_bytes"] = get_catalog_image(texture_key)
+
+        trace_context = None
+        if os.getenv("TRACE_PIPELINE") == "1":
+            trace_context = {
+                "design_id": str(design.id),
+                "room_id": str(room.id),
+                "provider": settings.image_provider,
+                "model_ids": settings.image_model_ids,
+                "style": design.style,
+                "palette": design.palette,
+                "seed": design.seed,
+                "worker_prompt": prompt,
+                "selected_items": [
+                    {
+                        "id": product.product_id,
+                        "name": product.title,
+                        "price_inr": str(product.price_inr),
+                        "style_match": product.theme.casefold() == design.style.casefold(),
+                        "role": design_item.role,
+                        "qty": design_item.qty,
+                        "kind": product.kind,
+                        "essential": design_item.is_essential,
+                    }
+                    for design_item, product in rows
+                ],
+            }
+        output_bytes = image_service.render(
+            prompt,
+            room_photo_bytes,
+            style=design.style,
+            palette=design.palette,
+            items=render_items,
+            depth_map=project_depth,
+            seed=design.seed,
+            trace_context=trace_context,
+        )
+        design.render_metadata = image_service.render_metadata
+        candidate_key = f"{project.id}/rooms/{room.id}/designs/{design.id}/candidate.png"
+        s3.put_object(Bucket=settings.s3_bucket, Key=candidate_key, Body=output_bytes,
+                      ContentType="image/png")
+        job.output_key = candidate_key
+        db.commit()
+        _update_job(db, job, redis_client, status=JobStatus.PROCESSING, progress=72,
+                    message="Verifying catalog objects and hotspot positions.")
+        verification = image_service.locate_items(output_bytes, render_items)
+        allowed_ids = {str(item["catalog_item_id"]) for item in manifest}
+        found = {
+            item.catalog_item_id: item.model_dump()
+            for item in verification.items
+            if item.catalog_item_id in allowed_ids
+        }
+        for design_item, product in rows:
+            if product.kind == "surface":
+                design_item.x = None
+                design_item.y = None
+                design_item.visible = True
+                design_item.visibility_reason = None
+                continue
+            result = found.get(product.product_id)
+            if result is not None and result["visible"] and result["x"] is not None and result["y"] is not None:
+                design_item.x = result["x"]
+                design_item.y = result["y"]
+                design_item.visible = True
+                design_item.visibility_reason = None
+            else:
+                design_item.x = None
+                design_item.y = None
+                design_item.visible = False
+                design_item.visibility_reason = result.get("visibility_reason") if result else "No placement was returned."
+
+        design.image_url = candidate_key
+        design.status = "COMPLETED"
+        design.error_message = None
         db.commit()
         _update_job(db, job, redis_client, status=JobStatus.COMPLETED, progress=100,
-                    message="2D redesign preview uploaded.", extra_fields={"output_key": preview_key})
-        return {"job_id": job_id, "output_key": preview_key}
+                    message="Catalog-grounded room design is ready.",
+                    extra_fields={"output_key": candidate_key})
+        return {"job_id": job_id, "design_id": design_id, "output_key": candidate_key}
     except Exception as exc:
         error = str(exc) or exc.__class__.__name__
-        logger.exception("2D redesign job %s failed", job_id)
+        logger.exception("Catalog design render %s failed", design_id)
+        if design is not None:
+            design.status = "FAILED"
+            design.error_message = error
+            db.commit()
         if job is not None:
             try:
                 _update_job(db, job, redis_client, status=JobStatus.FAILED,
-                            progress=job.progress, message=f"2D redesign failed: {error}",
+                            progress=job.progress, message=f"Design render failed: {error}",
                             error_message=error)
             except Exception:
                 db.rollback()
-                logger.exception("Could not persist failure state for redesign job %s", job_id)
+                logger.exception("Could not persist catalog render failure for job %s", job_id)
         raise
+    finally:
+        redis_client.close()
+        db.close()
+
+
+@render_celery_app.task(name="roomsage.reap_stalled_catalog_jobs", acks_late=True)
+def reap_stalled_catalog_jobs() -> dict[str, int]:
+    """Fail abandoned 2D catalog renders without touching other job types."""
+    inspector = render_celery_app.control.inspect(timeout=2)
+    active = inspector.active() if inspector else None
+    reserved = inspector.reserved() if inspector else None
+    if active is None and reserved is None:
+        logger.warning("Catalog render reaper skipped: Celery worker inspection unavailable.")
+        return {"failed": 0}
+    responders = set(active or {}) | set(reserved or {})
+    if not any(name.startswith("render@") for name in responders):
+        logger.info("Catalog render reaper skipped: no render worker is currently inspectable.")
+        return {"failed": 0}
+    live_ids: set[str] = set()
+    for task_map in (active or {}, reserved or {}):
+        for tasks in task_map.values():
+            live_ids.update(str(task.get("id")) for task in tasks if task.get("id"))
+    cutoff = datetime.now(timezone.utc).timestamp() - settings.catalog_render_timeout_seconds
+    db = SessionLocal()
+    redis_client = get_redis_client()
+    failed = 0
+    try:
+        jobs = db.query(Job).filter(Job.task_type == TaskType.REDESIGN_2D,
+                                    Job.status == JobStatus.PROCESSING).all()
+        for job in jobs:
+            age_from = job.started_at or job.updated_at
+            if age_from.timestamp() > cutoff:
+                continue
+            if str(job.id) in live_ids:
+                continue
+            design = db.get(Design, job.design_id) if job.design_id else None
+            if design:
+                design.status = "FAILED"
+                design.error_message = "job stalled or worker restarted"
+            _update_job(db, job, redis_client, status=JobStatus.FAILED,
+                        progress=job.progress, message="job stalled or worker restarted",
+                        error_message="job stalled or worker restarted")
+            failed += 1
+        return {"failed": failed}
     finally:
         redis_client.close()
         db.close()

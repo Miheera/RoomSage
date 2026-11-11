@@ -27,18 +27,45 @@ services:
 
   api:
     build: .
-    command: uvicorn main:app --host 0.0.0.0 --port 8000
+    command: sh -c "python -m scripts.run_migrations && python -m scripts.seed_catalog --skip-s3-check && python -m scripts.mirror_catalog_images && uvicorn main:app --host 0.0.0.0 --port 8000"
     environment:
       DATABASE_URL: postgresql+psycopg://roomsage:roomsage@postgres:5432/roomsage
       REDIS_URL: redis://redis:6379/0
-      CORS_ORIGINS: '["http://localhost:5173"]'
-      S3_BUCKET: roomsage
-      AWS_REGION: us-east-1
+      RENDER_REDIS_URL: redis://redis:6379/1
+      CATALOG_RENDER_TIMEOUT_SECONDS: ${CATALOG_RENDER_TIMEOUT_SECONDS:-600}
+      RENDER_VISIBILITY_TIMEOUT_SECONDS: ${RENDER_VISIBILITY_TIMEOUT_SECONDS:-660}
       S3_ENDPOINT_URL: http://minio:9000
+      S3_BUCKET_NAME: roomsage
       AWS_ACCESS_KEY_ID: minioadmin
       AWS_SECRET_ACCESS_KEY: minioadmin
+      GEMINI_API_KEY: ${GEMINI_API_KEY:-}
+      IMAGE_PROVIDER: ${IMAGE_PROVIDER:-stub}
+      HF_INPAINT_MODEL_ID: ${HF_INPAINT_MODEL_ID:-stable-diffusion-v1-5/stable-diffusion-inpainting}
+      REMOTE_RENDER_MODEL_ID: ${REMOTE_RENDER_MODEL_ID:-stable-diffusion-v1-5/stable-diffusion-inpainting}
+      HF_BASE_MODEL_ID: ${HF_BASE_MODEL_ID:-stable-diffusion-v1-5/stable-diffusion-v1-5}
+      HF_CONTROLNET_DEPTH_MODEL_ID: ${HF_CONTROLNET_DEPTH_MODEL_ID:-lllyasviel/sd-controlnet-depth}
+      HF_SEGMENTATION_MODEL_ID: ${HF_SEGMENTATION_MODEL_ID:-openmmlab/upernet-convnext-small}
+      HF_DEPTH_MODEL_ID: ${HF_DEPTH_MODEL_ID:-depth-anything/Depth-Anything-V2-Small-hf}
+      HF_TOKEN: ${HF_TOKEN:-}
+      MESHY_API_KEY: ${MESHY_API_KEY:-}
+      MOCK_MESHY: ${MOCK_MESHY:-true}
     ports:
       - "8000:8000"
+    volumes:
+      - catalog_images:/app/data/catalog_reference_images
+      - ./config.py:/app/config.py:ro
+      - ./models.py:/app/models.py:ro
+      - ./schemas:/app/schemas:ro
+      - ./services:/app/services:ro
+      - ./tasks:/app/tasks:ro
+      - ./routers:/app/routers:ro
+      - ./scripts:/app/scripts:ro
+      - ./migrations:/app/migrations:ro
+    healthcheck:
+      test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://127.0.0.1:8000/health', timeout=2)"]
+      interval: 5s
+      timeout: 3s
+      retries: 20
     depends_on:
       postgres:
         condition: service_healthy
@@ -53,23 +80,42 @@ services:
     build:
       context: .
       dockerfile: Dockerfile.gpu
-    command: celery -A tasks.celery_app.celery_app worker --loglevel=INFO --queues=gpu_queue
-    gpus: all
+    command: sh -c "chown -R roomsage:roomsage /app/data/catalog_reference_images /cache/huggingface && exec runuser -u roomsage -- celery -A tasks.celery_app.celery_app worker --loglevel=INFO --queues=gpu_queue"
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - driver: nvidia
+              count: all
+              capabilities: [gpu]
     environment:
       DATABASE_URL: postgresql+psycopg://roomsage:roomsage@postgres:5432/roomsage
       REDIS_URL: redis://redis:6379/0
-      S3_BUCKET: roomsage
-      AWS_REGION: us-east-1
       S3_ENDPOINT_URL: http://minio:9000
+      S3_BUCKET_NAME: roomsage
       AWS_ACCESS_KEY_ID: minioadmin
       AWS_SECRET_ACCESS_KEY: minioadmin
-      TRIPOSR_RUN_SCRIPT: ${TRIPOSR_RUN_SCRIPT:-}
-      EDIT_ASSET_GAUSSIAN_COUNT: ${EDIT_ASSET_GAUSSIAN_COUNT:-10000}
-      SAM_ENABLED: ${SAM_ENABLED:-false}
-      SAM_CHECKPOINT_PATH: ${SAM_CHECKPOINT_PATH:-}
-      SAM_MODEL_TYPE: ${SAM_MODEL_TYPE:-vit_b}
-      SAM_MAX_KEYFRAMES: ${SAM_MAX_KEYFRAMES:-8}
-      SAM_MAX_MASKS_PER_KEYFRAME: ${SAM_MAX_MASKS_PER_KEYFRAME:-128}
+      GEMINI_API_KEY: ${GEMINI_API_KEY:-}
+      IMAGE_PROVIDER: ${IMAGE_PROVIDER:-stub}
+      HF_INPAINT_MODEL_ID: ${HF_INPAINT_MODEL_ID:-stable-diffusion-v1-5/stable-diffusion-inpainting}
+      REMOTE_RENDER_MODEL_ID: ${REMOTE_RENDER_MODEL_ID:-stable-diffusion-v1-5/stable-diffusion-inpainting}
+      HF_BASE_MODEL_ID: ${HF_BASE_MODEL_ID:-stable-diffusion-v1-5/stable-diffusion-v1-5}
+      HF_CONTROLNET_DEPTH_MODEL_ID: ${HF_CONTROLNET_DEPTH_MODEL_ID:-lllyasviel/sd-controlnet-depth}
+      HF_SEGMENTATION_MODEL_ID: ${HF_SEGMENTATION_MODEL_ID:-openmmlab/upernet-convnext-small}
+      HF_DEPTH_MODEL_ID: ${HF_DEPTH_MODEL_ID:-depth-anything/Depth-Anything-V2-Small-hf}
+      HF_TOKEN: ${HF_TOKEN:-}
+      HF_HOME: /cache/huggingface
+      HF_HUB_CACHE: /cache/huggingface
+      U2NET_HOME: /cache/huggingface/rembg
+      TORCH_HOME: ${TORCH_HOME:-/cache/huggingface/torch}
+      HF_HUB_DISABLE_SYMLINKS_WARNING: "1"
+      MESHY_API_KEY: ${MESHY_API_KEY:-}
+      MOCK_MESHY: ${MOCK_MESHY:-true}
+    volumes:
+      - catalog_images:/app/data/catalog_reference_images
+      - type: bind
+        source: D:/huggingface_cache
+        target: /cache/huggingface
     depends_on:
       postgres:
         condition: service_healthy
@@ -79,6 +125,139 @@ services:
         condition: service_healthy
       minio-init:
         condition: service_completed_successfully
+      api:
+        condition: service_healthy
+
+  render-worker:
+    image: roomsage-render-worker:local
+    command: sh -c "chown -R roomsage:roomsage /app/data/catalog_reference_images /cache/huggingface /app/out && exec runuser -u roomsage -- celery -A tasks.celery_app.render_celery_app worker --loglevel=INFO --concurrency=1 --hostname=render@%h --queues=render_queue"
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - driver: nvidia
+              count: all
+              capabilities: [gpu]
+    environment:
+      DATABASE_URL: "postgresql+psycopg://roomsage:roomsage@postgres:5432/roomsage"
+      REDIS_URL: redis://redis:6379/0
+      RENDER_REDIS_URL: redis://redis:6379/1
+      CATALOG_RENDER_TIMEOUT_SECONDS: ${CATALOG_RENDER_TIMEOUT_SECONDS:-600}
+      RENDER_VISIBILITY_TIMEOUT_SECONDS: ${RENDER_VISIBILITY_TIMEOUT_SECONDS:-660}
+      S3_ENDPOINT_URL: http://minio:9000
+      S3_BUCKET_NAME: roomsage
+      AWS_ACCESS_KEY_ID: minioadmin
+      AWS_SECRET_ACCESS_KEY: minioadmin
+      GEMINI_API_KEY: ${GEMINI_API_KEY:-}
+      IMAGE_PROVIDER: ${IMAGE_PROVIDER:-stub}
+      HF_INPAINT_MODEL_ID: ${HF_INPAINT_MODEL_ID:-stable-diffusion-v1-5/stable-diffusion-inpainting}
+      REMOTE_RENDER_URL: ${REMOTE_RENDER_URL:-}
+      REMOTE_RENDER_TOKEN: ${REMOTE_RENDER_TOKEN:-}
+      REMOTE_RENDER_MODEL_ID: ${REMOTE_RENDER_MODEL_ID:-stable-diffusion-v1-5/stable-diffusion-inpainting}
+      REMOTE_RENDER_TIMEOUT_SECONDS: ${REMOTE_RENDER_TIMEOUT_SECONDS:-180}
+      REMOTE_BLEND_MARGIN_PIXELS: ${REMOTE_BLEND_MARGIN_PIXELS:-12}
+      HF_BASE_MODEL_ID: ${HF_BASE_MODEL_ID:-stable-diffusion-v1-5/stable-diffusion-v1-5}
+      HF_CONTROLNET_DEPTH_MODEL_ID: ${HF_CONTROLNET_DEPTH_MODEL_ID:-lllyasviel/sd-controlnet-depth}
+      HF_SEGMENTATION_MODEL_ID: ${HF_SEGMENTATION_MODEL_ID:-openmmlab/upernet-convnext-small}
+      HF_DEPTH_MODEL_ID: ${HF_DEPTH_MODEL_ID:-depth-anything/Depth-Anything-V2-Small-hf}
+      HF_TOKEN: ${HF_TOKEN:-}
+      HF_INPAINT_STEPS: ${HF_INPAINT_STEPS:-10}
+      HF_RESTYLE_STEPS: ${HF_RESTYLE_STEPS:-12}
+      HF_GUIDANCE_SCALE: ${HF_GUIDANCE_SCALE:-5.0}
+      HF_MAX_IMAGE_SIDE: ${HF_MAX_IMAGE_SIDE:-768}
+      HF_BASEBOARD_STRIP_PIXELS: ${HF_BASEBOARD_STRIP_PIXELS:-12}
+      HF_DOOR_PROTECTION_DILATION_PIXELS: ${HF_DOOR_PROTECTION_DILATION_PIXELS:-24}
+      HF_FLOOR_TEXTURE_TILE_WIDTH_FRACTION: ${HF_FLOOR_TEXTURE_TILE_WIDTH_FRACTION:-0.045}
+      HF_FLOOR_TEXTURE_CONTRAST: ${HF_FLOOR_TEXTURE_CONTRAST:-0.35}
+      HF_LEGACY_SD_RESTYLE_ENABLED: ${HF_LEGACY_SD_RESTYLE_ENABLED:-false}
+      HF_PHASH_MAX_DISTANCE: ${HF_PHASH_MAX_DISTANCE:-4}
+      HF_ROOM_WIDTH_M: ${HF_ROOM_WIDTH_M:-4.5}
+      HF_OBJECT_WIDTH_FRACTION: ${HF_OBJECT_WIDTH_FRACTION:-0.32}
+      HF_HARMONIZE_ENABLED: ${HF_HARMONIZE_ENABLED:-true}
+      HF_HARMONIZE_STRENGTH: ${HF_HARMONIZE_STRENGTH:-0.3}
+      HF_HARMONIZE_STEPS: ${HF_HARMONIZE_STEPS:-4}
+      HF_HARMONIZE_REGION_MARGIN_PIXELS: ${HF_HARMONIZE_REGION_MARGIN_PIXELS:-24}
+      HF_HARMONIZE_MIN_SSIM: ${HF_HARMONIZE_MIN_SSIM:-0.6}
+      HF_MAX_PLACED_OBJECTS: ${HF_MAX_PLACED_OBJECTS:-6}
+      HF_STAGE_TIMEOUT_SECONDS: ${HF_STAGE_TIMEOUT_SECONDS:-600}
+      RENDER_OUTPUT_DIR: /app/out
+      HF_HOME: /cache/huggingface
+      HF_HUB_CACHE: /cache/huggingface
+      U2NET_HOME: /cache/huggingface/rembg
+      TORCH_HOME: ${TORCH_HOME:-/cache/huggingface/torch}
+      HF_HUB_DISABLE_SYMLINKS_WARNING: "1"
+      HF_HUB_OFFLINE: "1"
+      TRACE_PIPELINE: ${TRACE_PIPELINE:-0}
+      MESHY_API_KEY: ${MESHY_API_KEY:-}
+      MOCK_MESHY: ${MOCK_MESHY:-true}
+    volumes:
+      - catalog_images:/app/data/catalog_reference_images
+      - ./config.py:/app/config.py:ro
+      - ./models.py:/app/models.py:ro
+      - ./schemas:/app/schemas:ro
+      - ./services:/app/services:ro
+      - ./tasks:/app/tasks:ro
+      - ./routers:/app/routers:ro
+      - ./scripts:/app/scripts:ro
+      - type: bind
+        source: D:/huggingface_cache
+        target: /cache/huggingface
+      - type: bind
+        source: ./out
+        target: /app/out
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+      minio:
+        condition: service_healthy
+      minio-init:
+        condition: service_completed_successfully
+      api:
+        condition: service_healthy
+
+  render-reaper:
+    image: roomsage-render-worker:local
+    command: sh -c "exec runuser -u roomsage -- celery -A tasks.celery_app.render_celery_app worker --loglevel=INFO --concurrency=1 --queues=render_reaper_queue"
+    environment:
+      DATABASE_URL: "postgresql+psycopg://roomsage:roomsage@postgres:5432/roomsage"
+      REDIS_URL: redis://redis:6379/0
+      RENDER_REDIS_URL: redis://redis:6379/1
+      CATALOG_RENDER_TIMEOUT_SECONDS: ${CATALOG_RENDER_TIMEOUT_SECONDS:-600}
+      RENDER_VISIBILITY_TIMEOUT_SECONDS: ${RENDER_VISIBILITY_TIMEOUT_SECONDS:-660}
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    volumes:
+      - ./config.py:/app/config.py:ro
+      - ./models.py:/app/models.py:ro
+      - ./schemas:/app/schemas:ro
+      - ./services:/app/services:ro
+      - ./tasks:/app/tasks:ro
+      - ./routers:/app/routers:ro
+      - ./scripts:/app/scripts:ro
+
+  render-beat:
+    image: roomsage-render-worker:local
+    command: sh -c "exec runuser -u roomsage -- celery -A tasks.celery_app.render_celery_app beat --loglevel=INFO --schedule=/tmp/celerybeat-schedule"
+    environment:
+      DATABASE_URL: "postgresql+psycopg://roomsage:roomsage@postgres:5432/roomsage"
+      REDIS_URL: redis://redis:6379/0
+      RENDER_REDIS_URL: redis://redis:6379/1
+    depends_on:
+      redis:
+        condition: service_healthy
+    volumes:
+      - ./config.py:/app/config.py:ro
+      - ./models.py:/app/models.py:ro
+      - ./schemas:/app/schemas:ro
+      - ./services:/app/services:ro
+      - ./tasks:/app/tasks:ro
+      - ./routers:/app/routers:ro
+      - ./scripts:/app/scripts:ro
 
   minio:
     image: docker.io/pgsty/silo:RELEASE.2026-10-26T00-00-00Z
@@ -109,3 +288,4 @@ services:
 volumes:
   postgres_data:
   minio_data:
+  catalog_images:

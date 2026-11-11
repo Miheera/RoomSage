@@ -1,0 +1,305 @@
+[
+  {
+    "photo": 2,
+    "design_id": "empty-objects-photo-02-00ee12d4-4028-426f-8b8e-239ba7ad225c",
+    "trace_dir": "D:\\RoomSage\\out\\trace\\empty-objects-photo-02-00ee12d4-4028-426f-8b8e-239ba7ad225c",
+    "status": "rendered",
+    "render_metadata": {
+      "pipeline": "ade20k_mask_based",
+      "segmentation": {
+        "model_id": "openmmlab/upernet-convnext-small",
+        "license": "MIT",
+        "model_card": "https://huggingface.co/openmmlab/upernet-convnext-small",
+        "furniture_percent": 0.0,
+        "baseboard_method": "wall_floor_boundary_strip",
+        "baseboard_width_px": 12,
+        "door_protection_dilation_px": 24
+      },
+      "surface_edits": {
+        "wall": {
+          "applied": true,
+          "color_rgb": [
+            205,
+            194,
+            170
+          ],
+          "color_hex": "#CDC2AA",
+          "source_color": "Sugared Nut",
+          "palette": "Warm Earth"
+        },
+        "floor": {
+          "applied": true,
+          "method": "perspective_tiled_texture_with_original_luminance",
+          "fallback": false,
+          "reason": null,
+          "tile_width_px": 35,
+          "tile_width_fraction": 0.045,
+          "texture_contrast": 0.35
+        }
+      }
+    },
+    "placements": {
+      "items": [
+        {
+          "catalog_item_id": "PAINT-JAP-087",
+          "visible": true,
+          "x": null,
+          "y": null,
+          "visibility_reason": null
+        },
+        {
+          "catalog_item_id": "FLOOR-JAP-009",
+          "visible": true,
+          "x": null,
+          "y": null,
+          "visibility_reason": null
+        },
+        {
+          "catalog_item_id": "FURN-JAP-001",
+          "visible": true,
+          "x": 0.69271,
+          "y": 0.78516,
+          "visibility_reason": null
+        },
+        {
+          "catalog_item_id": "RUG-JAP-006",
+          "visible": true,
+          "x": 0.44271,
+          "y": 0.83398,
+          "visibility_reason": null
+        },
+        {
+          "catalog_item_id": "DECOR-JAP-008",
+          "visible": true,
+          "x": 0.83854,
+          "y": 0.67188,
+          "visibility_reason": null
+        },
+        {
+          "catalog_item_id": "CHAIR-JAP-042",
+          "visible": true,
+          "x": 0.92188,
+          "y": 0.83008,
+          "visibility_reason": null
+        },
+        {
+          "catalog_item_id": "FURN-JAP-004",
+          "visible": true,
+          "x": 0.75521,
+          "y": 0.66211,
+          "visibility_reason": null
+        },
+        {
+          "catalog_item_id": "LIGHT-JAP-007",
+          "visible": true,
+          "x": 0.75521,
+          "y": 0.60742,
+          "visibility_reason": null
+        }
+      ],
+      "unlisted_furniture": []
+    }
+  },
+  {
+    "photo": 5,
+    "design_id": "empty-objects-photo-05-bf45c595-0070-4887-b17d-863aef0d0874",
+    "trace_dir": "D:\\RoomSage\\out\\trace\\empty-objects-photo-05-bf45c595-0070-4887-b17d-863aef0d0874",
+    "status": "rendered",
+    "render_metadata": {
+      "pipeline": "ade20k_mask_based",
+      "segmentation": {
+        "model_id": "openmmlab/upernet-convnext-small",
+        "license": "MIT",
+        "model_card": "https://huggingface.co/openmmlab/upernet-convnext-small",
+        "furniture_percent": 0.0,
+        "baseboard_method": "wall_floor_boundary_strip",
+        "baseboard_width_px": 12,
+        "door_protection_dilation_px": 24
+      },
+      "surface_edits": {
+        "wall": {
+          "applied": true,
+          "color_rgb": [
+            205,
+            194,
+            170
+          ],
+          "color_hex": "#CDC2AA",
+          "source_color": "Sugared Nut",
+          "palette": "Warm Earth"
+        },
+        "floor": {
+          "applied": true,
+          "method": "perspective_tiled_texture_with_original_luminance",
+          "fallback": false,
+          "reason": null,
+          "tile_width_px": 35,
+          "tile_width_fraction": 0.045,
+          "texture_contrast": 0.35
+        }
+      }
+    },
+    "placements": {
+      "items": [
+        {
+          "catalog_item_id": "PAINT-JAP-087",
+          "visible": true,
+          "x": null,
+          "y": null,
+          "visibility_reason": null
+        },
+        {
+          "catalog_item_id": "FLOOR-JAP-009",
+          "visible": true,
+          "x": null,
+          "y": null,
+          "visibility_reason": null
+        },
+        {
+          "catalog_item_id": "FURN-JAP-004",
+          "visible": true,
+          "x": 0.60938,
+          "y": 0.86328,
+          "visibility_reason": null
+        },
+        {
+          "catalog_item_id": "RUG-JAP-006",
+          "visible": true,
+          "x": 0.25521,
+          "y": 0.83008,
+          "visibility_reason": null
+        },
+        {
+          "catalog_item_id": "DECOR-JAP-008",
+          "visible": true,
+          "x": 0.65104,
+          "y": 0.63477,
+          "visibility_reason": null
+        },
+        {
+          "catalog_item_id": "FURN-JAP-001",
+          "visible": true,
+          "x": 0.75521,
+          "y": 0.69336,
+          "visibility_reason": null
+        },
+        {
+          "catalog_item_id": "CHAIR-JAP-042",
+          "visible": true,
+          "x": 0.50521,
+          "y": 0.71484,
+          "visibility_reason": null
+        },
+        {
+          "catalog_item_id": "LIGHT-JAP-007",
+          "visible": true,
+          "x": 0.60938,
+          "y": 0.78516,
+          "visibility_reason": null
+        }
+      ],
+      "unlisted_furniture": []
+    }
+  },
+  {
+    "photo": 6,
+    "design_id": "empty-objects-photo-06-cf8545a4-fe04-45e7-a5db-53d5c6dd3d26",
+    "trace_dir": "D:\\RoomSage\\out\\trace\\empty-objects-photo-06-cf8545a4-fe04-45e7-a5db-53d5c6dd3d26",
+    "status": "rendered",
+    "render_metadata": {
+      "pipeline": "ade20k_mask_based",
+      "segmentation": {
+        "model_id": "openmmlab/upernet-convnext-small",
+        "license": "MIT",
+        "model_card": "https://huggingface.co/openmmlab/upernet-convnext-small",
+        "furniture_percent": 0.0,
+        "baseboard_method": "wall_floor_boundary_strip",
+        "baseboard_width_px": 12,
+        "door_protection_dilation_px": 24
+      },
+      "surface_edits": {
+        "wall": {
+          "applied": true,
+          "color_rgb": [
+            205,
+            194,
+            170
+          ],
+          "color_hex": "#CDC2AA",
+          "source_color": "Sugared Nut",
+          "palette": "Warm Earth"
+        },
+        "floor": {
+          "applied": true,
+          "method": "perspective_tiled_texture_with_original_luminance",
+          "fallback": false,
+          "reason": null,
+          "tile_width_px": 35,
+          "tile_width_fraction": 0.045,
+          "texture_contrast": 0.35
+        }
+      }
+    },
+    "placements": {
+      "items": [
+        {
+          "catalog_item_id": "PAINT-JAP-087",
+          "visible": true,
+          "x": null,
+          "y": null,
+          "visibility_reason": null
+        },
+        {
+          "catalog_item_id": "FLOOR-JAP-009",
+          "visible": true,
+          "x": null,
+          "y": null,
+          "visibility_reason": null
+        },
+        {
+          "catalog_item_id": "RUG-JAP-006",
+          "visible": true,
+          "x": 0.40104,
+          "y": 0.77734,
+          "visibility_reason": null
+        },
+        {
+          "catalog_item_id": "DECOR-JAP-008",
+          "visible": true,
+          "x": 0.71354,
+          "y": 0.81445,
+          "visibility_reason": null
+        },
+        {
+          "catalog_item_id": "FURN-JAP-004",
+          "visible": true,
+          "x": 0.88021,
+          "y": 0.89062,
+          "visibility_reason": null
+        },
+        {
+          "catalog_item_id": "CHAIR-JAP-042",
+          "visible": true,
+          "x": 0.13021,
+          "y": 0.79688,
+          "visibility_reason": null
+        },
+        {
+          "catalog_item_id": "FURN-JAP-001",
+          "visible": true,
+          "x": 0.65104,
+          "y": 0.54883,
+          "visibility_reason": null
+        },
+        {
+          "catalog_item_id": "LIGHT-JAP-007",
+          "visible": true,
+          "x": 0.88021,
+          "y": 0.82617,
+          "visibility_reason": null
+        }
+      ],
+      "unlisted_furniture": []
+    }
+  }
+]

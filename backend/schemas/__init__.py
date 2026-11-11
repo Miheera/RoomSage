@@ -1,7 +1,7 @@
 from datetime import datetime
 from uuid import UUID
 
-from pydantic import BaseModel, ConfigDict, Field, field_validator
+from pydantic import BaseModel, ConfigDict, Field
 
 from models import JobStatus, TaskType
 from schemas.integration import (
@@ -56,19 +56,6 @@ class JobCreate(BaseModel):
     project_id: UUID
 
 
-class RedesignJobRequest(BaseModel):
-    project_id: UUID
-    prompt: str = Field(min_length=1, max_length=2000)
-
-    @field_validator("prompt")
-    @classmethod
-    def strip_prompt(cls, value: str) -> str:
-        value = value.strip()
-        if not value:
-            raise ValueError("prompt must not be blank.")
-        return value
-
-
 class JobCreated(BaseModel):
     job_id: UUID
     status: JobStatus
@@ -118,7 +105,6 @@ __all__ = [
     "ProjectRead",
     "PhotoQualityFeedback",
     "PhotoUploadResponse",
-    "RedesignJobRequest",
     "RefinedDesignPrompt",
     "RoomSceneAnalysis",
     "ShoppingListItem",

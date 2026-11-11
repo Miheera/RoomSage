@@ -1,0 +1,25 @@
+{
+  "pipeline": "ade20k_mask_based",
+  "segmentation": {
+    "model_id": "openmmlab/upernet-convnext-small",
+    "license": "MIT",
+    "model_card": "https://huggingface.co/openmmlab/upernet-convnext-small",
+    "furniture_percent": 0.0
+  },
+  "surface_edits": {
+    "wall": {
+      "applied": true,
+      "color_rgb": [
+        245,
+        245,
+        220
+      ]
+    },
+    "floor": {
+      "applied": true,
+      "method": "perspective_tiled_texture_with_original_luminance",
+      "fallback": false,
+      "reason": null
+    }
+  }
+}

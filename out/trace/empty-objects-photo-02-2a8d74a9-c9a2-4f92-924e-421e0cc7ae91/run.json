@@ -1,0 +1,6 @@
+{
+  "status": "failed",
+  "error": "Could not load or run inpainting model 'stable-diffusion-v1-5/stable-diffusion-inpainting': We couldn't connect to 'https://huggingface.co' to load this model, couldn't find it in the cached files and it looks like D:\\huggingface_cache\\hub\\models--stable-diffusion-v1-5--stable-diffusion-inpainting\\snapshots\\8a4288a76071f7280aedbdb3253bdb9e9d5d84bb\\model_index.json is not the path to a directory containing a model_index.json file.\nCheckout your internet connection or see how to run the library in offline mode at 'https://huggingface.co/docs/diffusers/installation#offline-mode'.",
+  "trace_errors": [],
+  "stage_count": 35
+}

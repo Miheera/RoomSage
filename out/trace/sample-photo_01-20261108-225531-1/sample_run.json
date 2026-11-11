@@ -1,0 +1,66 @@
+{
+  "photo": "photo_01.jpg",
+  "layout": "narrow hallway",
+  "lighting_profile": "ceiling-lit / interior",
+  "mean_input_luminance_0_255": 194.32,
+  "seconds": 37.523,
+  "provider": "huggingface",
+  "model_id": "openmmlab/upernet-convnext-small",
+  "model_device": "cpu",
+  "cuda_available": true,
+  "cuda_device": "NVIDIA GeForce RTX 3050 Laptop GPU",
+  "furniture_guard": "passed",
+  "render_metadata": {
+    "pipeline": "ade20k_mask_based",
+    "segmentation": {
+      "model_id": "openmmlab/upernet-convnext-small",
+      "license": "MIT",
+      "model_card": "https://huggingface.co/openmmlab/upernet-convnext-small",
+      "furniture_percent": 0.0
+    },
+    "surface_edits": {
+      "wall": {
+        "applied": true,
+        "color_rgb": [
+          245,
+          245,
+          220
+        ]
+      },
+      "floor": {
+        "applied": true,
+        "method": "perspective_tiled_texture_with_original_luminance",
+        "fallback": false,
+        "reason": null
+      }
+    }
+  },
+  "selected_surface_items": [
+    {
+      "id": "PAINT-JAP-087",
+      "name": "Asian Paints Royale Sugared Nut L126",
+      "role": "paint"
+    },
+    {
+      "id": "FLOOR-JAP-009",
+      "name": "Kajaria Eternity light beige tile",
+      "role": "flooring"
+    }
+  ],
+  "hotspots": [
+    {
+      "catalog_item_id": "PAINT-JAP-087",
+      "visible": true,
+      "x": null,
+      "y": null,
+      "visibility_reason": null
+    },
+    {
+      "catalog_item_id": "FLOOR-JAP-009",
+      "visible": true,
+      "x": null,
+      "y": null,
+      "visibility_reason": null
+    }
+  ]
+}

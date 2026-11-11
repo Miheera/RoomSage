@@ -1,0 +1,85 @@
+{
+  "design_id": "empty-objects-photo-05-681f61ae-07ab-4ffc-8a51-0f89ef2ffeea",
+  "room_id": "sample-photo-05",
+  "provider": "huggingface",
+  "model_ids": {
+    "segmentation": "openmmlab/upernet-convnext-small"
+  },
+  "style": "Japandi",
+  "palette": "Warm Earth",
+  "seed": 20261113,
+  "selected_items": [
+    {
+      "id": "FURN-JAP-001",
+      "name": "GLOSTAD 2-seat sofa, Knisa medium blue",
+      "price_inr": "12990.00",
+      "style_match": true,
+      "role": "sofa",
+      "kind": "object",
+      "essential": true
+    },
+    {
+      "id": "CHAIR-JAP-042",
+      "name": "ADDE Chair",
+      "price_inr": "990.00",
+      "style_match": true,
+      "role": "chair",
+      "kind": "object",
+      "essential": true
+    },
+    {
+      "id": "FURN-JAP-004",
+      "name": "STOCKHOLM Coffee table",
+      "price_inr": "20990.00",
+      "style_match": true,
+      "role": "coffee_table",
+      "kind": "object",
+      "essential": true
+    },
+    {
+      "id": "LIGHT-JAP-007",
+      "name": "\u00c5RSTID Table lamp",
+      "price_inr": "6990.00",
+      "style_match": true,
+      "role": "lighting",
+      "kind": "object",
+      "essential": true
+    },
+    {
+      "id": "RUG-JAP-006",
+      "name": "STOENSE Rug, low pile, off-white",
+      "price_inr": "9990.00",
+      "style_match": true,
+      "role": "rug",
+      "kind": "object",
+      "essential": true
+    },
+    {
+      "id": "DECOR-JAP-008",
+      "name": "FEJKA Artificial potted plant, Monstera",
+      "price_inr": "2990.00",
+      "style_match": true,
+      "role": "decor",
+      "kind": "object",
+      "essential": true
+    },
+    {
+      "id": "PAINT-JAP-087",
+      "name": "Asian Paints Royale Sugared Nut L126",
+      "price_inr": "850.00",
+      "style_match": true,
+      "role": "paint",
+      "kind": "surface",
+      "essential": false
+    },
+    {
+      "id": "FLOOR-JAP-009",
+      "name": "Kajaria Eternity light beige tile",
+      "price_inr": "65.00",
+      "style_match": true,
+      "role": "flooring",
+      "kind": "surface",
+      "essential": false
+    }
+  ]
+}

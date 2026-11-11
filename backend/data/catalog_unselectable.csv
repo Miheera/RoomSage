@@ -1,0 +1,7 @@
+product_id,role,kind,image_status,reason
+CHAIR-MIN-094,chair,object,failed,object has no usable reference image (missing image_url)
+FURN-JAP-002,bed,object,review,image_status=review; staged scene or room image needs manual review
+LIGHT-NOR-090,lighting,object,failed,object has no usable reference image (missing image_url)
+PAINT-JAP-005,paint,surface,review,image_status=review; staged scene or room image needs manual review
+PAINT-NOR-016,paint,surface,review,image_status=review; staged scene or room image needs manual review
+RUG-IND-066,rug,object,failed,object has no usable reference image (missing image_url)

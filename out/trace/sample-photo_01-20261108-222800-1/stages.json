@@ -1,0 +1,11 @@
+[
+  {
+    "stage": "01_input.png",
+    "file": "D:\\RoomSage\\out\\trace\\sample-photo_01-20261108-222800-1\\01_input.png",
+    "seconds": 0,
+    "peak_allocated_vram_mb": null,
+    "peak_reserved_vram_mb": null,
+    "model_id": "Pillow aspect-preserving resize",
+    "device": "cpu"
+  }
+]

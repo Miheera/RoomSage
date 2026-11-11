@@ -1,0 +1,13 @@
+{
+  "input_sha256": "a5bbe0cf0171b6258ea5a21adc191ff7c919a4581d7832ce8a604c96e1be35c6",
+  "final_sha256": "e10a7170d69ba7271a603f4fa9082bb33d0de778226aa2ed7d2d70c7427f3262",
+  "identical_bytes": false,
+  "identical_pixels": false,
+  "ssim": 0.9325032314127778,
+  "phash_distance": 16,
+  "near_identical": false,
+  "near_identical_threshold": {
+    "ssim_gte": 0.99,
+    "phash_distance_lte": 4
+  }
+}

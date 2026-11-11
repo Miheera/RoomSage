@@ -15,16 +15,40 @@ The API uses the lightweight `Dockerfile`; the Celery worker uses
 `Dockerfile.gpu`, based on CUDA 12.1 / Ubuntu 22.04 with Python 3.10,
 PyTorch 2.2.2, gsplat 1.0.0, Nerfstudio 1.0.2, and COLMAP. Running the worker
 requires Docker with NVIDIA Container Toolkit/GPU passthrough configured. GPU
-tasks are routed to the `gpu_queue`. The TripoSR runner is not bundled; set
+tasks are routed to the `gpu_queue`. Gemini is used for text and vision-language
+tasks, `IMAGE_PROVIDER` selects the catalog-constrained 2D image renderer, and
+Meshy owns catalog GLB generation. The TripoSR runner is not bundled; set
 `TRIPOSR_RUN_SCRIPT` to a path available inside the worker container if asset
 insertion is enabled.
+
+## 2D image provider
+
+`IMAGE_PROVIDER=stub` keeps the fast photo-copy implementation for local checks.
+Set `IMAGE_PROVIDER=huggingface` to enable the empty-room renderer. It uses the
+MIT licensed ADE20K UPerNet ConvNeXt Small model for room masks, edits wall
+color and flooring only inside those masks, and places catalog reference images.
+Furniture clearing and SD/ControlNet restyling are not part of the default path;
+the legacy SD path is opt-in with `HF_LEGACY_SD_RESTYLE_ENABLED=true`.
+`HF_MAX_IMAGE_SIDE` defaults to 768; image resizing preserves aspect ratio.
+Geometry, mask boundaries, and mask-based edits are checked for size and pixel
+identity. Stage duration and peak allocated/reserved VRAM are logged. Weights are shared from `D:\huggingface_cache` into
+`/cache/huggingface`; each configured model ID can be overridden with its
+`HF_*_MODEL_ID` environment variable. Provider, model IDs, and seed are stored
+on each design row.
+Before rendering catalog objects, run `IMAGE_PROVIDER=huggingface python -m
+scripts.download_models`; this caches ADE20K and rembg U-2-Net weights in the
+shared cache. The render worker fails early if required weights are missing.
+The worker writes trace artifacts to `out/trace/<design_id>/` when
+`TRACE_PIPELINE=1`.
 
 The API is at `http://localhost:8000` and its OpenAPI UI is at
 `http://localhost:8000/docs`. MinIO's console is at `http://localhost:9001`
 (`minioadmin` / `minioadmin`). Compose creates the `roomsage` bucket automatically.
 For non-container development, copy `.env.example` to
-`.env`, create the bucket, install `requirements.txt`, and run
-`uvicorn main:app --reload`; start a separate worker with
+`.env`, create the bucket, set a long random `AUTH_SECRET`, install
+`requirements.txt`, and run `python -m scripts.run_migrations`, then
+`python -m scripts.seed_catalog` (or `--skip-s3-check` for metadata-only local
+development), then `uvicorn main:app --reload`; start a separate worker with
 `celery -A tasks.celery_app.celery_app worker --loglevel=INFO`.
 
 Run `python scripts/gpu_healthcheck.py` inside the GPU worker environment to
@@ -35,12 +59,23 @@ is true; use `--require-sam` to require them explicitly.
 ## API flow
 
 1. `POST /api/v1/projects` with `{"name":"Living room","room_type":"living_room"}`.
-2. `POST /api/v1/projects/{project_id}/photos` as multipart form data with a
-   `files` field repeated for 5-15 JPEG, PNG, or WebP images.
-3. `POST /api/v1/jobs/reconstruct` with `{"project_id":"<uuid>"}`.
-4. Poll `GET /api/v1/jobs/{job_id}` for state, progress, logs, ETA, and signed
+2. Register/login at `/api/v1/auth/register` or `/api/v1/auth/login`; send the
+   returned bearer token on private API requests. Create a project, then add
+   rooms with `POST /api/v1/projects/{project_id}/rooms`.
+3. Upload room photos with `POST /api/v1/rooms/{room_id}/photos` as multipart
+   form data with a
+   `files` field repeated for 1-15 JPEG, PNG, or WebP images. A single photo can
+   be used to create a depth-conditioned 2D design; three photos satisfy the
+   coverage threshold reported for a 3D room preview. Gaussian reconstruction
+   remains a separate 5-15 photo job.
+4. Set a budget with `POST /api/v1/rooms/{room_id}/budget`; use
+   `GET /api/v1/rooms/{room_id}/budget-range` first. Start a 2D design with
+   `POST /api/v1/rooms/{room_id}/designs`.
+5. Poll `GET /api/v1/jobs/{job_id}` for state, progress, logs, ETA, and signed
    output URLs.
-5. `POST /api/v1/jobs/edit` with a project ID and one or more edit operations
+6. `POST /api/v1/jobs/reconstruct` with `{"project_id":"<uuid>"}` for the
+   separate Gaussian reconstruction workflow.
+7. `POST /api/v1/jobs/edit` with a project ID and one or more edit operations
    to queue Stage 4. The response includes a `polling_url` for the same job
    endpoint.
 

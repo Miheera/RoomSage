@@ -1,0 +1,30 @@
+[
+  {
+    "from": "01_input",
+    "to": "04_cleared",
+    "ssim": 0.8395285366182195,
+    "phash_distance": 0,
+    "differs": true
+  },
+  {
+    "from": "04_cleared",
+    "to": "05_restyled",
+    "ssim": 0.7615341531624763,
+    "phash_distance": 10,
+    "differs": true
+  },
+  {
+    "from": "05_restyled",
+    "to": "06_placed",
+    "ssim": 0.9807727540607661,
+    "phash_distance": 10,
+    "differs": true
+  },
+  {
+    "from": "06_placed",
+    "to": "07_final",
+    "ssim": 0.9989292552020318,
+    "phash_distance": 0,
+    "differs": true
+  }
+]

@@ -1,0 +1,16 @@
+[
+  {
+    "from": "input",
+    "to": "restyled",
+    "ssim": 0.9926364625779325,
+    "phash_distance": 0,
+    "differs": true
+  },
+  {
+    "from": "restyled",
+    "to": "final",
+    "ssim": 0.9613425836452031,
+    "phash_distance": 4,
+    "differs": true
+  }
+]

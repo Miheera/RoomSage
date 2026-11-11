@@ -1,0 +1,32 @@
+{
+  "model_id": "openmmlab/upernet-convnext-small",
+  "license": "MIT",
+  "model_card": "https://huggingface.co/openmmlab/upernet-convnext-small",
+  "furniture_percent": 0.0,
+  "furniture_classes": [
+    "armchair",
+    "bed",
+    "bench",
+    "bookcase",
+    "booth",
+    "buffet",
+    "cabinet",
+    "chair",
+    "chest of drawers",
+    "coffee table",
+    "counter",
+    "cushion",
+    "desk",
+    "fireplace",
+    "lamp",
+    "ottoman",
+    "seat",
+    "shelf",
+    "sofa",
+    "stool",
+    "swivel chair",
+    "table",
+    "television receiver",
+    "wardrobe"
+  ]
+}

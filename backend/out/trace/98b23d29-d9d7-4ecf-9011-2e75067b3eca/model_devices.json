@@ -1,0 +1,22 @@
+{
+  "depth": {
+    "loaded_on": "cpu",
+    "execution_on": "cpu"
+  },
+  "detr_segmentation": {
+    "loaded_on": "cpu",
+    "execution_on": "cpu"
+  },
+  "inpainting": {
+    "weights_loaded_on": "cpu",
+    "execution_on": "cuda:0 via sequential/model CPU offload"
+  },
+  "controlnet_restyle": {
+    "weights_loaded_on": "cpu",
+    "execution_on": "cuda:0 via sequential/model CPU offload"
+  },
+  "background_removal": {
+    "loaded_on": "cpu",
+    "execution_on": "cpu (OpenCV/Pillow)"
+  }
+}

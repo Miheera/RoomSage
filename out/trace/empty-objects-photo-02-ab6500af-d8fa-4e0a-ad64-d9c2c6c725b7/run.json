@@ -1,0 +1,6 @@
+{
+  "status": "failed",
+  "error": "Could not load or run inpainting model 'D:\\\\huggingface_cache\\\\local\\\\stable-diffusion-v1-5-inpainting': Can't load image processor for 'D:\\huggingface_cache\\local\\stable-diffusion-v1-5-inpainting'. If you were trying to load it from 'https://huggingface.co/models', make sure you don't have a local directory with the same name. Otherwise, make sure 'D:\\huggingface_cache\\local\\stable-diffusion-v1-5-inpainting' is the correct path to a directory containing a preprocessor_config.json file",
+  "trace_errors": [],
+  "stage_count": 35
+}

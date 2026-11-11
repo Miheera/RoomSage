@@ -1,0 +1,18 @@
+criterion,value,product_ids
+buy_url,https://www.ikea.com/in/en/cat/beds-bm003/,FURN-JAP-002;FURN-NOR-012;FURN-IND-062
+buy_url,https://www.ikea.com/in/en/cat/poaeng-series-07472/,FURN-JAP-003;CHAIR-NOR-049;CHAIR-MIC-077
+buy_url,https://www.ikea.com/in/en/cat/coffee-tables-fu006/,FURN-JAP-004;TABLE-IND-026;TABLE-MIC-036;TABLE-BOH-070;FURN-IND-099
+buy_url,https://www.ikea.com/in/en/cat/rugs-carpet-tl001/,RUG-JAP-006;RUG-NOR-015;RUG-IND-027;RUG-BOH-031;RUG-MIC-038;RUG-JAP-044;RUG-NOR-052;RUG-MIN-059;RUG-IND-066;RUG-BOH-072;RUG-MIC-080;RUG-JAP-086;RUG-NOR-091;RUG-MIN-096
+buy_url,https://www.kajariaceramics.com/,FLOOR-JAP-009;FLOOR-MIN-022;FLOOR-MIC-040;FLOOR-JAP-047;FLOOR-MIN-061;FLOOR-BOH-075;FLOOR-MIC-082;FLOOR-MIN-098
+buy_url,https://www.ikea.com/in/en/cat/sofas-armchairs-700640/,FURN-NOR-010;FURN-MIN-017;FURN-BOH-029;FURN-MIC-035;FURN-NOR-048;FURN-MIN-055;FURN-MIC-076
+buy_url,https://www.ikea.com/in/en/cat/armchairs-fu002/,FURN-NOR-011;CHAIR-BOH-030;FURN-BOH-069
+buy_url,https://www.ikea.com/in/en/cat/dining-tables-fu004/,TABLE-NOR-013;FURN-JAP-041
+buy_url,https://www.asianpaints.com/,PAINT-NOR-016;PAINT-MIN-021;PAINT-IND-028;PAINT-BOH-034;PAINT-MIC-039;PAINT-JAP-045;PAINT-NOR-053;PAINT-MIN-060;PAINT-IND-067;PAINT-BOH-073;PAINT-MIC-081;PAINT-JAP-087;PAINT-NOR-092;PAINT-MIN-097
+buy_url,https://www.ikea.com/in/en/cat/dining-chairs-fu005/,CHAIR-MIN-019;CHAIR-JAP-042;CHAIR-MIN-056;CHAIR-IND-063;CHAIR-NOR-089;CHAIR-MIN-094
+buy_url,https://www.ikea.com/in/en/cat/pendant-lamps-li003/,LIGHT-MIN-020;LIGHT-IND-025;LIGHT-MIC-037;LIGHT-NOR-051;LIGHT-MIC-079;LIGHT-NOR-090;LIGHT-MIN-095
+buy_url,https://www.ikea.com/in/en/cat/bookcases-shelving-units-st001/,FURN-IND-024;TABLE-IND-064
+buy_url,https://www.ikea.com/in/en/cat/artificial-plants-st004/,DECOR-BOH-032;DECOR-BOH-074
+buy_url,https://www.ikea.com/in/en/cat/table-lamps-li004/,LIGHT-BOH-033;LIGHT-MIN-058;LIGHT-BOH-071;LIGHT-JAP-085
+buy_url,https://www.ikea.com/in/en/cat/side-tables-fu007/,TABLE-NOR-050;TABLE-MIN-057;TABLE-MIC-078
+buy_url,https://www.ikea.com/in/en/cat/wall-lamps-li006/,LIGHT-IND-065;LIGHT-IND-100
+name,asian paints royale soft honey 7876,PAINT-BOH-034;PAINT-BOH-073

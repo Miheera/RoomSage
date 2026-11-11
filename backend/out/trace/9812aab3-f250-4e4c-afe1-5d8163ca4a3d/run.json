@@ -1,0 +1,6 @@
+{
+  "status": "failed",
+  "error": "Could not load or run segmentation model 'facebook/detr-resnet-50-dc5-panoptic': \nTimmBackbone requires the timm library but it was not found in your environment. You can install it with pip:\n`pip install timm`. Please note that you may need to restart your runtime after installation.\n",
+  "trace_errors": [],
+  "stage_count": 1
+}

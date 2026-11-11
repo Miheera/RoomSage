@@ -1,0 +1,6 @@
+{
+  "status": "failed",
+  "error": "Could not load or run depth-ControlNet model 'lllyasviel/sd-controlnet-depth' with base model 'stable-diffusion-v1-5/stable-diffusion-v1-5': The size of tensor a (64) must match the size of tensor b (80) at non-singleton dimension 3",
+  "trace_errors": [],
+  "stage_count": 4
+}

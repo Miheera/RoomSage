@@ -1,0 +1,6 @@
+{
+  "status": "failed",
+  "error": "name 'ImageOps' is not defined",
+  "trace_errors": [],
+  "stage_count": 35
+}

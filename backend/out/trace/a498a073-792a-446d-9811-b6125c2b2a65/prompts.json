@@ -1,0 +1,7 @@
+{
+  "worker_prompt": "Photorealistically restyle the room's architectural surfaces while preserving its geometry, camera angle, walls, windows, doors, ceiling, and floor plan. Style: Japandi. Palette: Cream & Wood. Apply these selected wall and floor finishes: flooring (Kajaria Eternity matt white tile): large format matt white floor tile; color=Matt White; material=Vitrified tile paint (Asian Paints Royale Sugared Nut L126): warm soft beige wall paint; color=Sugared Nut; material=Emulsion Paint",
+  "furniture_removal": "An empty room with the same architecture, floor and wall surfaces.",
+  "surface_restyle": "Photorealistic empty interior restyling. Preserve the existing camera view, room geometry, walls, windows, doors, ceiling and floor plan. Restyle only the wall and floor finishes. Style: Japandi. Palette: Cream & Wood. Required wall and floor finishes: flooring: Matt White Vitrified tile large format matt white floor tile; paint: Sugared Nut Emulsion Paint warm soft beige wall paint.",
+  "post_restyle_furniture_removal": "An empty room with the same architecture, floor and wall surfaces.",
+  "harmonize": "Photorealistic seamless integration with consistent room lighting and shadows."
+}

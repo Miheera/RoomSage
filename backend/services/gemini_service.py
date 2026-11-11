@@ -9,6 +9,7 @@ from collections.abc import Mapping, Sequence
 from pathlib import Path
 from typing import Any
 
+import httpx
 import pandas as pd
 from google import genai
 from google.genai import types
@@ -18,8 +19,9 @@ from pydantic import BaseModel
 
 from config import settings
 from schemas.gemini import (
-    RefinedDesignPrompt,
     ChatRefinementResponse,
+    CatalogImageVerification,
+    RefinedDesignPrompt,
     RoomSceneAnalysis,
     ShoppingListItem,
     ShoppingListResponse,
@@ -49,7 +51,9 @@ class GeminiService:
             http_options=types.HttpOptions(timeout=120_000),
         )
 
-    def _generate(self, contents: Any, schema: type[BaseModel]) -> BaseModel:
+    def _generate(
+        self, contents: Any, schema: type[BaseModel], model_override: str | None = None,
+    ) -> BaseModel:
         config = types.GenerateContentConfig(
             response_mime_type="application/json",
             # `response_schema` uses Gemini's older OpenAPI subset and rejects
@@ -58,13 +62,23 @@ class GeminiService:
             max_output_tokens=4096,
         )
         response = None
-        models = (self.MODEL, *self.FALLBACK_MODELS)
+        models = (model_override or self.MODEL, *(() if model_override else self.FALLBACK_MODELS))
+        timeout_retry_used = False
         for index, model in enumerate(models):
             try:
                 response = self.client.models.generate_content(
                     model=model, contents=contents, config=config
                 )
                 break
+            except httpx.TimeoutException:
+                if timeout_retry_used or index == len(models) - 1:
+                    raise
+                timeout_retry_used = True
+                logger.warning(
+                    "Gemini model %s timed out; retrying once with fallback %s.",
+                    model,
+                    models[index + 1],
+                )
             except ServerError as exc:
                 if exc.code != 503 or index == len(models) - 1:
                     raise
@@ -148,6 +162,29 @@ class GeminiService:
         )
         return self._generate(prompt, ChatRefinementResponse)  # type: ignore[return-value]
 
+    def verify_catalog_items(
+        self,
+        image: bytes,
+        items: Sequence[Mapping[str, Any]],
+    ) -> CatalogImageVerification:
+        """Locate only the selected catalog objects in an already-rendered preview."""
+        if not image:
+            raise ValueError("The rendered preview must not be empty.")
+        if not items:
+            raise ValueError("At least one catalog item is required for verification.")
+        prompt = (
+            "Inspect this completed room redesign. For each supplied catalog item, report whether "
+            "the matching object is visibly present and, if so, its normalized center coordinates "
+            "(x and y from 0 to 1). Do not add item IDs or infer unseen objects. Surfaces are not "
+            "included in this list. Return an empty unlisted_furniture list unless extra furniture "
+            "is clearly visible. Catalog items:\n"
+            f"{json.dumps(list(items), ensure_ascii=False, default=str)}"
+        )
+        return self._generate(
+            [prompt, self._image_part(image)],
+            CatalogImageVerification,
+        )  # type: ignore[return-value]
+
     def generate_budget_shopping_list(
         self,
         budget_cap_inr: float,
@@ -214,6 +251,7 @@ class GeminiService:
                     category=source["category"],
                     price_inr=price,
                     buy_url=source["buy_url"],
+                    image_url=source.get("image_url") or None,
                 ))
                 remaining -= price
                 seen.add(product_id)

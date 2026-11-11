@@ -1,0 +1,65 @@
+[
+  {
+    "stage": "01_input.png",
+    "file": "/app/out/trace/98b23d29-d9d7-4ecf-9011-2e75067b3eca/01_input.png",
+    "seconds": 0,
+    "peak_allocated_vram_mb": null,
+    "peak_reserved_vram_mb": null,
+    "model_id": "Pillow image decode; room photo normalization occurred at upload",
+    "device": "cpu"
+  },
+  {
+    "stage": "02_depth.png",
+    "file": "/app/out/trace/98b23d29-d9d7-4ecf-9011-2e75067b3eca/02_depth.png",
+    "seconds": 7.327857174999735,
+    "peak_allocated_vram_mb": 0.0,
+    "peak_reserved_vram_mb": 0.0,
+    "model_id": "depth-anything/Depth-Anything-V2-Small-hf",
+    "device": "cpu"
+  },
+  {
+    "stage": "03_furniture_mask.png",
+    "file": "/app/out/trace/98b23d29-d9d7-4ecf-9011-2e75067b3eca/03_furniture_mask.png",
+    "seconds": 50.65081215400005,
+    "peak_allocated_vram_mb": 0.0,
+    "peak_reserved_vram_mb": 0.0,
+    "model_id": "facebook/detr-resnet-50-dc5-panoptic",
+    "device": "cpu"
+  },
+  {
+    "stage": "04_cleared.png",
+    "file": "/app/out/trace/98b23d29-d9d7-4ecf-9011-2e75067b3eca/04_cleared.png",
+    "seconds": 0,
+    "peak_allocated_vram_mb": null,
+    "peak_reserved_vram_mb": null,
+    "model_id": "not run: no furniture mask",
+    "device": "cpu"
+  },
+  {
+    "stage": "05_restyled.png",
+    "file": "/app/out/trace/98b23d29-d9d7-4ecf-9011-2e75067b3eca/05_restyled.png",
+    "seconds": 438.22960736499954,
+    "peak_allocated_vram_mb": 547.60693359375,
+    "peak_reserved_vram_mb": 688.0,
+    "model_id": "facebook/detr-resnet-50-dc5-panoptic, stable-diffusion-v1-5/stable-diffusion-v1-5 + lllyasviel/sd-controlnet-depth",
+    "device": "cpu + cuda:0 (CPU offload)"
+  },
+  {
+    "stage": "06_placed.png",
+    "file": "/app/out/trace/98b23d29-d9d7-4ecf-9011-2e75067b3eca/06_placed.png",
+    "seconds": 4.183845665998888,
+    "peak_allocated_vram_mb": 8.125,
+    "peak_reserved_vram_mb": 20.0,
+    "model_id": "Pillow/OpenCV catalog cutout and placement",
+    "device": "cpu"
+  },
+  {
+    "stage": "07_final.png",
+    "file": "/app/out/trace/98b23d29-d9d7-4ecf-9011-2e75067b3eca/07_final.png",
+    "seconds": 0.07696467999994638,
+    "peak_allocated_vram_mb": 8.125,
+    "peak_reserved_vram_mb": 20.0,
+    "model_id": "OpenCV DCT perceptual hash",
+    "device": "cpu"
+  }
+]

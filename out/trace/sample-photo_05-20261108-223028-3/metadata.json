@@ -1,0 +1,31 @@
+{
+  "design_id": "sample-photo_05-20261108-223028-3",
+  "photo": "photo_05.jpg",
+  "room_id": "sample-fixture",
+  "provider": "huggingface",
+  "model_ids": {
+    "segmentation": "openmmlab/upernet-convnext-small"
+  },
+  "style": "Japandi",
+  "palette": "warm beige and sage",
+  "seed": 4103,
+  "worker_prompt": "Japandi empty-room surface design. Preserve room geometry. Edit walls and floor only.",
+  "selected_items": [
+    {
+      "id": "audit-paint-sage",
+      "name": "Sage wall finish (surface test)",
+      "price_inr": "0",
+      "style_match": true,
+      "role": "paint",
+      "kind": "surface"
+    },
+    {
+      "id": "audit-floor-oak",
+      "name": "Oak plank texture (surface test)",
+      "price_inr": "0",
+      "style_match": true,
+      "role": "flooring",
+      "kind": "surface"
+    }
+  ]
+}

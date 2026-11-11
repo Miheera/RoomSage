@@ -1,0 +1,317 @@
+[
+  {
+    "stage": "01_input.png",
+    "file": "..\\out\\trace\\empty-objects-photo-02-9fc5dd4b-fb64-46bf-916f-4c9a81ddcc67\\01_input.png",
+    "seconds": 0,
+    "peak_allocated_vram_mb": null,
+    "peak_reserved_vram_mb": null,
+    "model_id": "Pillow aspect-preserving resize",
+    "device": "cpu"
+  },
+  {
+    "stage": "02_wall_mask.png",
+    "file": "..\\out\\trace\\empty-objects-photo-02-9fc5dd4b-fb64-46bf-916f-4c9a81ddcc67\\02_wall_mask.png",
+    "seconds": 33.27363129999139,
+    "peak_allocated_vram_mb": 0.0,
+    "peak_reserved_vram_mb": 0.0,
+    "model_id": "openmmlab/upernet-convnext-small",
+    "device": "cpu"
+  },
+  {
+    "stage": "03_floor_mask.png",
+    "file": "..\\out\\trace\\empty-objects-photo-02-9fc5dd4b-fb64-46bf-916f-4c9a81ddcc67\\03_floor_mask.png",
+    "seconds": 33.27363129999139,
+    "peak_allocated_vram_mb": 0.0,
+    "peak_reserved_vram_mb": 0.0,
+    "model_id": "openmmlab/upernet-convnext-small",
+    "device": "cpu"
+  },
+  {
+    "stage": "04_ceiling_mask.png",
+    "file": "..\\out\\trace\\empty-objects-photo-02-9fc5dd4b-fb64-46bf-916f-4c9a81ddcc67\\04_ceiling_mask.png",
+    "seconds": 33.27363129999139,
+    "peak_allocated_vram_mb": 0.0,
+    "peak_reserved_vram_mb": 0.0,
+    "model_id": "openmmlab/upernet-convnext-small",
+    "device": "cpu"
+  },
+  {
+    "stage": "05_window_mask.png",
+    "file": "..\\out\\trace\\empty-objects-photo-02-9fc5dd4b-fb64-46bf-916f-4c9a81ddcc67\\05_window_mask.png",
+    "seconds": 33.27363129999139,
+    "peak_allocated_vram_mb": 0.0,
+    "peak_reserved_vram_mb": 0.0,
+    "model_id": "openmmlab/upernet-convnext-small",
+    "device": "cpu"
+  },
+  {
+    "stage": "06_door_mask.png",
+    "file": "..\\out\\trace\\empty-objects-photo-02-9fc5dd4b-fb64-46bf-916f-4c9a81ddcc67\\06_door_mask.png",
+    "seconds": 33.27363129999139,
+    "peak_allocated_vram_mb": 0.0,
+    "peak_reserved_vram_mb": 0.0,
+    "model_id": "openmmlab/upernet-convnext-small",
+    "device": "cpu"
+  },
+  {
+    "stage": "07_curtain_mask.png",
+    "file": "..\\out\\trace\\empty-objects-photo-02-9fc5dd4b-fb64-46bf-916f-4c9a81ddcc67\\07_curtain_mask.png",
+    "seconds": 33.27363129999139,
+    "peak_allocated_vram_mb": 0.0,
+    "peak_reserved_vram_mb": 0.0,
+    "model_id": "openmmlab/upernet-convnext-small",
+    "device": "cpu"
+  },
+  {
+    "stage": "08_furniture_mask.png",
+    "file": "..\\out\\trace\\empty-objects-photo-02-9fc5dd4b-fb64-46bf-916f-4c9a81ddcc67\\08_furniture_mask.png",
+    "seconds": 33.27363129999139,
+    "peak_allocated_vram_mb": 0.0,
+    "peak_reserved_vram_mb": 0.0,
+    "model_id": "openmmlab/upernet-convnext-small",
+    "device": "cpu"
+  },
+  {
+    "stage": "mask_baseboard.png",
+    "file": "..\\out\\trace\\empty-objects-photo-02-9fc5dd4b-fb64-46bf-916f-4c9a81ddcc67\\mask_baseboard.png",
+    "seconds": 33.27363129999139,
+    "peak_allocated_vram_mb": 0.0,
+    "peak_reserved_vram_mb": 0.0,
+    "model_id": "openmmlab/upernet-convnext-small",
+    "device": "cpu"
+  },
+  {
+    "stage": "mask_furniture_armchair.png",
+    "file": "..\\out\\trace\\empty-objects-photo-02-9fc5dd4b-fb64-46bf-916f-4c9a81ddcc67\\mask_furniture_armchair.png",
+    "seconds": 33.27363129999139,
+    "peak_allocated_vram_mb": 0.0,
+    "peak_reserved_vram_mb": 0.0,
+    "model_id": "openmmlab/upernet-convnext-small",
+    "device": "cpu"
+  },
+  {
+    "stage": "mask_furniture_bed.png",
+    "file": "..\\out\\trace\\empty-objects-photo-02-9fc5dd4b-fb64-46bf-916f-4c9a81ddcc67\\mask_furniture_bed.png",
+    "seconds": 33.27363129999139,
+    "peak_allocated_vram_mb": 0.0,
+    "peak_reserved_vram_mb": 0.0,
+    "model_id": "openmmlab/upernet-convnext-small",
+    "device": "cpu"
+  },
+  {
+    "stage": "mask_furniture_bench.png",
+    "file": "..\\out\\trace\\empty-objects-photo-02-9fc5dd4b-fb64-46bf-916f-4c9a81ddcc67\\mask_furniture_bench.png",
+    "seconds": 33.27363129999139,
+    "peak_allocated_vram_mb": 0.0,
+    "peak_reserved_vram_mb": 0.0,
+    "model_id": "openmmlab/upernet-convnext-small",
+    "device": "cpu"
+  },
+  {
+    "stage": "mask_furniture_bookcase.png",
+    "file": "..\\out\\trace\\empty-objects-photo-02-9fc5dd4b-fb64-46bf-916f-4c9a81ddcc67\\mask_furniture_bookcase.png",
+    "seconds": 33.27363129999139,
+    "peak_allocated_vram_mb": 0.0,
+    "peak_reserved_vram_mb": 0.0,
+    "model_id": "openmmlab/upernet-convnext-small",
+    "device": "cpu"
+  },
+  {
+    "stage": "mask_furniture_booth.png",
+    "file": "..\\out\\trace\\empty-objects-photo-02-9fc5dd4b-fb64-46bf-916f-4c9a81ddcc67\\mask_furniture_booth.png",
+    "seconds": 33.27363129999139,
+    "peak_allocated_vram_mb": 0.0,
+    "peak_reserved_vram_mb": 0.0,
+    "model_id": "openmmlab/upernet-convnext-small",
+    "device": "cpu"
+  },
+  {
+    "stage": "mask_furniture_buffet.png",
+    "file": "..\\out\\trace\\empty-objects-photo-02-9fc5dd4b-fb64-46bf-916f-4c9a81ddcc67\\mask_furniture_buffet.png",
+    "seconds": 33.27363129999139,
+    "peak_allocated_vram_mb": 0.0,
+    "peak_reserved_vram_mb": 0.0,
+    "model_id": "openmmlab/upernet-convnext-small",
+    "device": "cpu"
+  },
+  {
+    "stage": "mask_furniture_cabinet.png",
+    "file": "..\\out\\trace\\empty-objects-photo-02-9fc5dd4b-fb64-46bf-916f-4c9a81ddcc67\\mask_furniture_cabinet.png",
+    "seconds": 33.27363129999139,
+    "peak_allocated_vram_mb": 0.0,
+    "peak_reserved_vram_mb": 0.0,
+    "model_id": "openmmlab/upernet-convnext-small",
+    "device": "cpu"
+  },
+  {
+    "stage": "mask_furniture_chair.png",
+    "file": "..\\out\\trace\\empty-objects-photo-02-9fc5dd4b-fb64-46bf-916f-4c9a81ddcc67\\mask_furniture_chair.png",
+    "seconds": 33.27363129999139,
+    "peak_allocated_vram_mb": 0.0,
+    "peak_reserved_vram_mb": 0.0,
+    "model_id": "openmmlab/upernet-convnext-small",
+    "device": "cpu"
+  },
+  {
+    "stage": "mask_furniture_chest_of_drawers.png",
+    "file": "..\\out\\trace\\empty-objects-photo-02-9fc5dd4b-fb64-46bf-916f-4c9a81ddcc67\\mask_furniture_chest_of_drawers.png",
+    "seconds": 33.27363129999139,
+    "peak_allocated_vram_mb": 0.0,
+    "peak_reserved_vram_mb": 0.0,
+    "model_id": "openmmlab/upernet-convnext-small",
+    "device": "cpu"
+  },
+  {
+    "stage": "mask_furniture_coffee_table.png",
+    "file": "..\\out\\trace\\empty-objects-photo-02-9fc5dd4b-fb64-46bf-916f-4c9a81ddcc67\\mask_furniture_coffee_table.png",
+    "seconds": 33.27363129999139,
+    "peak_allocated_vram_mb": 0.0,
+    "peak_reserved_vram_mb": 0.0,
+    "model_id": "openmmlab/upernet-convnext-small",
+    "device": "cpu"
+  },
+  {
+    "stage": "mask_furniture_counter.png",
+    "file": "..\\out\\trace\\empty-objects-photo-02-9fc5dd4b-fb64-46bf-916f-4c9a81ddcc67\\mask_furniture_counter.png",
+    "seconds": 33.27363129999139,
+    "peak_allocated_vram_mb": 0.0,
+    "peak_reserved_vram_mb": 0.0,
+    "model_id": "openmmlab/upernet-convnext-small",
+    "device": "cpu"
+  },
+  {
+    "stage": "mask_furniture_cushion.png",
+    "file": "..\\out\\trace\\empty-objects-photo-02-9fc5dd4b-fb64-46bf-916f-4c9a81ddcc67\\mask_furniture_cushion.png",
+    "seconds": 33.27363129999139,
+    "peak_allocated_vram_mb": 0.0,
+    "peak_reserved_vram_mb": 0.0,
+    "model_id": "openmmlab/upernet-convnext-small",
+    "device": "cpu"
+  },
+  {
+    "stage": "mask_furniture_desk.png",
+    "file": "..\\out\\trace\\empty-objects-photo-02-9fc5dd4b-fb64-46bf-916f-4c9a81ddcc67\\mask_furniture_desk.png",
+    "seconds": 33.27363129999139,
+    "peak_allocated_vram_mb": 0.0,
+    "peak_reserved_vram_mb": 0.0,
+    "model_id": "openmmlab/upernet-convnext-small",
+    "device": "cpu"
+  },
+  {
+    "stage": "mask_furniture_fireplace.png",
+    "file": "..\\out\\trace\\empty-objects-photo-02-9fc5dd4b-fb64-46bf-916f-4c9a81ddcc67\\mask_furniture_fireplace.png",
+    "seconds": 33.27363129999139,
+    "peak_allocated_vram_mb": 0.0,
+    "peak_reserved_vram_mb": 0.0,
+    "model_id": "openmmlab/upernet-convnext-small",
+    "device": "cpu"
+  },
+  {
+    "stage": "mask_furniture_lamp.png",
+    "file": "..\\out\\trace\\empty-objects-photo-02-9fc5dd4b-fb64-46bf-916f-4c9a81ddcc67\\mask_furniture_lamp.png",
+    "seconds": 33.27363129999139,
+    "peak_allocated_vram_mb": 0.0,
+    "peak_reserved_vram_mb": 0.0,
+    "model_id": "openmmlab/upernet-convnext-small",
+    "device": "cpu"
+  },
+  {
+    "stage": "mask_furniture_ottoman.png",
+    "file": "..\\out\\trace\\empty-objects-photo-02-9fc5dd4b-fb64-46bf-916f-4c9a81ddcc67\\mask_furniture_ottoman.png",
+    "seconds": 33.27363129999139,
+    "peak_allocated_vram_mb": 0.0,
+    "peak_reserved_vram_mb": 0.0,
+    "model_id": "openmmlab/upernet-convnext-small",
+    "device": "cpu"
+  },
+  {
+    "stage": "mask_furniture_rug.png",
+    "file": "..\\out\\trace\\empty-objects-photo-02-9fc5dd4b-fb64-46bf-916f-4c9a81ddcc67\\mask_furniture_rug.png",
+    "seconds": 33.27363129999139,
+    "peak_allocated_vram_mb": 0.0,
+    "peak_reserved_vram_mb": 0.0,
+    "model_id": "openmmlab/upernet-convnext-small",
+    "device": "cpu"
+  },
+  {
+    "stage": "mask_furniture_seat.png",
+    "file": "..\\out\\trace\\empty-objects-photo-02-9fc5dd4b-fb64-46bf-916f-4c9a81ddcc67\\mask_furniture_seat.png",
+    "seconds": 33.27363129999139,
+    "peak_allocated_vram_mb": 0.0,
+    "peak_reserved_vram_mb": 0.0,
+    "model_id": "openmmlab/upernet-convnext-small",
+    "device": "cpu"
+  },
+  {
+    "stage": "mask_furniture_shelf.png",
+    "file": "..\\out\\trace\\empty-objects-photo-02-9fc5dd4b-fb64-46bf-916f-4c9a81ddcc67\\mask_furniture_shelf.png",
+    "seconds": 33.27363129999139,
+    "peak_allocated_vram_mb": 0.0,
+    "peak_reserved_vram_mb": 0.0,
+    "model_id": "openmmlab/upernet-convnext-small",
+    "device": "cpu"
+  },
+  {
+    "stage": "mask_furniture_sofa.png",
+    "file": "..\\out\\trace\\empty-objects-photo-02-9fc5dd4b-fb64-46bf-916f-4c9a81ddcc67\\mask_furniture_sofa.png",
+    "seconds": 33.27363129999139,
+    "peak_allocated_vram_mb": 0.0,
+    "peak_reserved_vram_mb": 0.0,
+    "model_id": "openmmlab/upernet-convnext-small",
+    "device": "cpu"
+  },
+  {
+    "stage": "mask_furniture_stool.png",
+    "file": "..\\out\\trace\\empty-objects-photo-02-9fc5dd4b-fb64-46bf-916f-4c9a81ddcc67\\mask_furniture_stool.png",
+    "seconds": 33.27363129999139,
+    "peak_allocated_vram_mb": 0.0,
+    "peak_reserved_vram_mb": 0.0,
+    "model_id": "openmmlab/upernet-convnext-small",
+    "device": "cpu"
+  },
+  {
+    "stage": "mask_furniture_swivel_chair.png",
+    "file": "..\\out\\trace\\empty-objects-photo-02-9fc5dd4b-fb64-46bf-916f-4c9a81ddcc67\\mask_furniture_swivel_chair.png",
+    "seconds": 33.27363129999139,
+    "peak_allocated_vram_mb": 0.0,
+    "peak_reserved_vram_mb": 0.0,
+    "model_id": "openmmlab/upernet-convnext-small",
+    "device": "cpu"
+  },
+  {
+    "stage": "mask_furniture_table.png",
+    "file": "..\\out\\trace\\empty-objects-photo-02-9fc5dd4b-fb64-46bf-916f-4c9a81ddcc67\\mask_furniture_table.png",
+    "seconds": 33.27363129999139,
+    "peak_allocated_vram_mb": 0.0,
+    "peak_reserved_vram_mb": 0.0,
+    "model_id": "openmmlab/upernet-convnext-small",
+    "device": "cpu"
+  },
+  {
+    "stage": "mask_furniture_television_receiver.png",
+    "file": "..\\out\\trace\\empty-objects-photo-02-9fc5dd4b-fb64-46bf-916f-4c9a81ddcc67\\mask_furniture_television_receiver.png",
+    "seconds": 33.27363129999139,
+    "peak_allocated_vram_mb": 0.0,
+    "peak_reserved_vram_mb": 0.0,
+    "model_id": "openmmlab/upernet-convnext-small",
+    "device": "cpu"
+  },
+  {
+    "stage": "mask_furniture_wardrobe.png",
+    "file": "..\\out\\trace\\empty-objects-photo-02-9fc5dd4b-fb64-46bf-916f-4c9a81ddcc67\\mask_furniture_wardrobe.png",
+    "seconds": 33.27363129999139,
+    "peak_allocated_vram_mb": 0.0,
+    "peak_reserved_vram_mb": 0.0,
+    "model_id": "openmmlab/upernet-convnext-small",
+    "device": "cpu"
+  },
+  {
+    "stage": "09_restyled.png",
+    "file": "..\\out\\trace\\empty-objects-photo-02-9fc5dd4b-fb64-46bf-916f-4c9a81ddcc67\\09_restyled.png",
+    "seconds": 0.49000299999897834,
+    "peak_allocated_vram_mb": 0.0,
+    "peak_reserved_vram_mb": 0.0,
+    "model_id": "OpenCV LAB + perspective warp",
+    "device": "cpu"
+  }
+]

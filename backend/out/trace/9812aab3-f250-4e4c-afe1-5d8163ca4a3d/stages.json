@@ -1,0 +1,12 @@
+[
+  {
+    "stage": "01_input.png",
+    "file": "out\\trace\\9812aab3-f250-4e4c-afe1-5d8163ca4a3d\\01_input.png",
+    "seconds": 0,
+    "peak_allocated_vram_mb": null,
+    "peak_reserved_vram_mb": null,
+    "model_id": "Pillow image decode; room photo normalization occurred at upload",
+    "phash_distance_from_previous": null,
+    "differs_from_previous": false
+  }
+]

@@ -38,6 +38,7 @@ class ShoppingListItem(BaseModel):
     category: str
     price_inr: float = Field(ge=0)
     buy_url: str
+    image_url: str | None = None
 
 
 class ShoppingListResponse(BaseModel):
@@ -51,3 +52,30 @@ class ShoppingListResponse(BaseModel):
     paint_estimate_inr: float = Field(ge=0)
     flooring_estimate_inr: float = Field(ge=0)
 
+
+class VerifiedDesignItem(BaseModel):
+    model_config = ConfigDict(extra="forbid")
+
+    catalog_item_id: str
+    visible: bool
+    x: float | None = Field(default=None, ge=0, le=1)
+    y: float | None = Field(default=None, ge=0, le=1)
+    visibility_reason: str | None = None
+
+
+class CatalogImageVerification(BaseModel):
+    model_config = ConfigDict(extra="forbid")
+
+    items: list[VerifiedDesignItem]
+    unlisted_furniture: list[str] = Field(default_factory=list)
+
+
+__all__ = [
+    "CatalogImageVerification",
+    "ChatRefinementResponse",
+    "RefinedDesignPrompt",
+    "RoomSceneAnalysis",
+    "ShoppingListItem",
+    "ShoppingListResponse",
+    "VerifiedDesignItem",
+]

@@ -1,0 +1,31 @@
+{
+  "design_id": "sample-photo_02-20261108-225609-2",
+  "photo": "photo_02.jpg",
+  "room_id": "sample-fixture",
+  "provider": "huggingface",
+  "model_ids": {
+    "segmentation": "openmmlab/upernet-convnext-small"
+  },
+  "style": "Japandi",
+  "palette": "warm beige and sage",
+  "seed": 4102,
+  "worker_prompt": "Japandi empty-room surface design. Preserve room geometry. Edit walls and floor only.",
+  "selected_items": [
+    {
+      "id": "PAINT-JAP-087",
+      "name": "Asian Paints Royale Sugared Nut L126",
+      "price_inr": "850.00",
+      "style_match": true,
+      "role": "paint",
+      "kind": "surface"
+    },
+    {
+      "id": "FLOOR-JAP-009",
+      "name": "Kajaria Eternity light beige tile",
+      "price_inr": "65.00",
+      "style_match": true,
+      "role": "flooring",
+      "kind": "surface"
+    }
+  ]
+}

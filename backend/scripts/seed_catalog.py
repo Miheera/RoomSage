@@ -32,7 +32,11 @@ REQUIRED_COLUMNS = {
     "product_id",
     "title",
     "category",
+    "role",
+    "kind",
+    "selectable",
     "theme",
+    "room_types",
     "price_inr",
     "dimensions_m",
     "primary_color",
@@ -97,7 +101,11 @@ def _parse_row(row: dict[str, str], line_number: int) -> dict[str, Any]:
         "product_id": _required(row, "product_id", line_number),
         "title": _required(row, "title", line_number),
         "category": _required(row, "category", line_number),
+        "role": _parse_role(_required(row, "role", line_number), line_number),
+        "kind": _parse_kind(_required(row, "kind", line_number), line_number),
+        "selectable": _parse_bool(_required(row, "selectable", line_number), "selectable", line_number),
         "theme": _required(row, "theme", line_number),
+        "room_types": _parse_room_types(_required(row, "room_types", line_number), line_number),
         "price_inr": price,
         "dimensions_m": _parse_dimensions(_required(row, "dimensions_m", line_number), line_number),
         "primary_color": _required(row, "primary_color", line_number),
@@ -105,8 +113,50 @@ def _parse_row(row: dict[str, str], line_number: int) -> dict[str, Any]:
         "prompt_phrase": _required(row, "prompt_phrase", line_number),
         "image_s3_key": image_key,
         "buy_url": _required(row, "buy_url", line_number),
-        "image_url": row.get("image_url", "").strip() or None,
+        "image_url": None,
+        "source_image_url": row.get("image_url", "").strip() or None,
+        "reference_image_s3_key": None,
     }
+
+
+def _parse_room_types(value: str, line_number: int) -> list[str]:
+    try:
+        room_types = json.loads(value)
+    except json.JSONDecodeError as exc:
+        raise CatalogSeedError(f"CSV line {line_number}: room_types must be a JSON array.") from exc
+    allowed = {"living_room", "bedroom", "dining_room"}
+    if (
+        not isinstance(room_types, list)
+        or not room_types
+        or any(not isinstance(item, str) or item not in allowed for item in room_types)
+    ):
+        raise CatalogSeedError(
+            f"CSV line {line_number}: room_types must contain supported catalog room types."
+        )
+    return sorted(set(room_types))
+
+
+def _parse_role(value: str, line_number: int) -> str:
+    allowed = {
+        "sofa", "bed", "chair", "coffee_table", "dining_table", "side_table",
+        "storage", "rug", "lighting", "decor", "paint", "flooring",
+    }
+    if value not in allowed:
+        raise CatalogSeedError(f"CSV line {line_number}: unsupported catalog role {value!r}.")
+    return value
+
+
+def _parse_kind(value: str, line_number: int) -> str:
+    if value not in {"object", "surface"}:
+        raise CatalogSeedError(f"CSV line {line_number}: kind must be object or surface.")
+    return value
+
+
+def _parse_bool(value: str, field: str, line_number: int) -> bool:
+    normalized = value.casefold()
+    if normalized not in {"true", "false"}:
+        raise CatalogSeedError(f"CSV line {line_number}: {field} must be true or false.")
+    return normalized == "true"
 
 
 def read_catalog(csv_path: Path) -> list[dict[str, Any]]:
@@ -158,7 +208,7 @@ def upsert_catalog(records: list[dict[str, Any]]) -> int:
     updates = {
         column.name: getattr(statement.excluded, column.name)
         for column in CatalogProduct.__table__.columns
-        if column.name not in {"product_id", "created_at"}
+        if column.name not in {"product_id", "created_at", "image_url", "reference_image_s3_key"}
     }
     updates["updated_at"] = func.now()
     statement = statement.values(records).on_conflict_do_update(

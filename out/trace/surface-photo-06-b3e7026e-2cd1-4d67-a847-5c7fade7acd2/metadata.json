@@ -1,0 +1,21 @@
+{
+  "design_id": "surface-photo-06-b3e7026e-2cd1-4d67-a847-5c7fade7acd2",
+  "room_id": "sample-6",
+  "provider": "huggingface",
+  "model_ids": {
+    "segmentation": "openmmlab/upernet-convnext-small"
+  },
+  "style": "Japandi",
+  "palette": "Warm Earth",
+  "seed": 6,
+  "selected_items": [
+    {
+      "id": "PAINT-JAP-087",
+      "name": "Asian Paints Royale Sugared Nut L126"
+    },
+    {
+      "id": "FLOOR-JAP-009",
+      "name": "Kajaria Eternity light beige tile"
+    }
+  ]
+}

@@ -1,0 +1,109 @@
+{
+  "photos": [
+    {
+      "photo": 2,
+      "metrics": [
+        {
+          "candidate": "SD 1.5 Inpaint",
+          "model_id": "stable-diffusion-v1-5/stable-diffusion-inpainting",
+          "license": "CreativeML OpenRAIL-M",
+          "vram_estimate": "6\u20138 GB fp16 at 512 px; model CPU offload enabled",
+          "measured_peak_vram_gb": 0.0,
+          "seconds": 0.009,
+          "seed": 20261110,
+          "stub": true
+        },
+        {
+          "candidate": "InstructPix2Pix baseline",
+          "model_id": "timbrooks/instruct-pix2pix",
+          "license": "MIT on model card; underlying Stable Diffusion terms may also apply",
+          "vram_estimate": "8\u201312 GB fp16 at 512 px; model CPU offload enabled",
+          "measured_peak_vram_gb": 0.0,
+          "seconds": 0.008,
+          "seed": 20261110,
+          "stub": true
+        },
+        {
+          "candidate": "Qwen Image Edit 4-bit",
+          "model_id": "Qwen/Qwen-Image-Edit",
+          "license": "Apache-2.0",
+          "vram_estimate": "about 12\u201316 GB at 512 px with 4-bit transformer and CPU offload; may be T4-memory-bound",
+          "measured_peak_vram_gb": 0.0,
+          "seconds": 0.007,
+          "seed": 20261110,
+          "stub": true
+        }
+      ]
+    },
+    {
+      "photo": 5,
+      "metrics": [
+        {
+          "candidate": "SD 1.5 Inpaint",
+          "model_id": "stable-diffusion-v1-5/stable-diffusion-inpainting",
+          "license": "CreativeML OpenRAIL-M",
+          "vram_estimate": "6\u20138 GB fp16 at 512 px; model CPU offload enabled",
+          "measured_peak_vram_gb": 0.0,
+          "seconds": 0.008,
+          "seed": 20261113,
+          "stub": true
+        },
+        {
+          "candidate": "InstructPix2Pix baseline",
+          "model_id": "timbrooks/instruct-pix2pix",
+          "license": "MIT on model card; underlying Stable Diffusion terms may also apply",
+          "vram_estimate": "8\u201312 GB fp16 at 512 px; model CPU offload enabled",
+          "measured_peak_vram_gb": 0.0,
+          "seconds": 0.007,
+          "seed": 20261113,
+          "stub": true
+        },
+        {
+          "candidate": "Qwen Image Edit 4-bit",
+          "model_id": "Qwen/Qwen-Image-Edit",
+          "license": "Apache-2.0",
+          "vram_estimate": "about 12\u201316 GB at 512 px with 4-bit transformer and CPU offload; may be T4-memory-bound",
+          "measured_peak_vram_gb": 0.0,
+          "seconds": 0.008,
+          "seed": 20261113,
+          "stub": true
+        }
+      ]
+    },
+    {
+      "photo": 6,
+      "metrics": [
+        {
+          "candidate": "SD 1.5 Inpaint",
+          "model_id": "stable-diffusion-v1-5/stable-diffusion-inpainting",
+          "license": "CreativeML OpenRAIL-M",
+          "vram_estimate": "6\u20138 GB fp16 at 512 px; model CPU offload enabled",
+          "measured_peak_vram_gb": 0.0,
+          "seconds": 0.007,
+          "seed": 20261114,
+          "stub": true
+        },
+        {
+          "candidate": "InstructPix2Pix baseline",
+          "model_id": "timbrooks/instruct-pix2pix",
+          "license": "MIT on model card; underlying Stable Diffusion terms may also apply",
+          "vram_estimate": "8\u201312 GB fp16 at 512 px; model CPU offload enabled",
+          "measured_peak_vram_gb": 0.0,
+          "seconds": 0.006,
+          "seed": 20261114,
+          "stub": true
+        },
+        {
+          "candidate": "Qwen Image Edit 4-bit",
+          "model_id": "Qwen/Qwen-Image-Edit",
+          "license": "Apache-2.0",
+          "vram_estimate": "about 12\u201316 GB at 512 px with 4-bit transformer and CPU offload; may be T4-memory-bound",
+          "measured_peak_vram_gb": 0.0,
+          "seconds": 0.01,
+          "seed": 20261114,
+          "stub": true
+        }
+      ]
+    }
+  ]
+}

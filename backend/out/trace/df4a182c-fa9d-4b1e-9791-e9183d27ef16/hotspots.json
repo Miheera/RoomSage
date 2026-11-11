@@ -1,0 +1,86 @@
+[
+  {
+    "catalog_item_id": "FLOOR-JAP-047",
+    "visible": true,
+    "x": null,
+    "y": null,
+    "visibility_reason": null
+  },
+  {
+    "catalog_item_id": "PAINT-JAP-087",
+    "visible": true,
+    "x": null,
+    "y": null,
+    "visibility_reason": null
+  },
+  {
+    "catalog_item_id": "DECOR-JAP-008",
+    "visible": false,
+    "x": null,
+    "y": null,
+    "visibility_reason": "Not placed: maximum of 6 objects per design."
+  },
+  {
+    "catalog_item_id": "FURN-JAP-084",
+    "visible": false,
+    "x": null,
+    "y": null,
+    "visibility_reason": "Not placed: maximum of 6 objects per design."
+  },
+  {
+    "catalog_item_id": "FURN-JAP-003",
+    "visible": false,
+    "x": null,
+    "y": null,
+    "visibility_reason": "Not placed: maximum of 6 objects per design."
+  },
+  {
+    "catalog_item_id": "DECOR-JAP-046",
+    "visible": false,
+    "x": null,
+    "y": null,
+    "visibility_reason": "Not placed: maximum of 6 objects per design."
+  },
+  {
+    "catalog_item_id": "RUG-JAP-006",
+    "visible": true,
+    "x": 0.38208,
+    "y": 0.77969,
+    "visibility_reason": null
+  },
+  {
+    "catalog_item_id": "LIGHT-JAP-043",
+    "visible": true,
+    "x": 0.79717,
+    "y": 0.82969,
+    "visibility_reason": null
+  },
+  {
+    "catalog_item_id": "FURN-JAP-001",
+    "visible": true,
+    "x": 0.64623,
+    "y": 0.825,
+    "visibility_reason": null
+  },
+  {
+    "catalog_item_id": "CHAIR-JAP-042",
+    "visible": true,
+    "x": 0.49528,
+    "y": 0.70625,
+    "visibility_reason": null
+  },
+  {
+    "catalog_item_id": "FURN-JAP-004",
+    "visible": true,
+    "x": 0.38208,
+    "y": 0.72344,
+    "visibility_reason": null
+  },
+  {
+    "catalog_item_id": "LIGHT-JAP-007",
+    "visible": true,
+    "x": 0.26887,
+    "y": 0.81719,
+    "visibility_reason": null
+  }
+]

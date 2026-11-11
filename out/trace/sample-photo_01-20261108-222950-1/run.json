@@ -1,0 +1,8 @@
+{
+  "status": "rendered",
+  "error": null,
+  "trace_errors": [
+    "Could not compare input and final images: object supporting the buffer API required"
+  ],
+  "stage_count": 34
+}

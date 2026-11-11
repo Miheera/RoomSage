@@ -1,0 +1,39 @@
+{
+  "prompt": "Match the existing room lighting and shadow, with subtle grounded contact at the floor.",
+  "strength": 0.3,
+  "ssim_threshold": 0.6,
+  "seconds": 57.12278769999102,
+  "items": [
+    {
+      "catalog_item_id": "FURN-JAP-001",
+      "ssim": 0.9394576850794145,
+      "fallback": false
+    },
+    {
+      "catalog_item_id": "RUG-JAP-006",
+      "ssim": 0.9589290269991866,
+      "fallback": false
+    },
+    {
+      "catalog_item_id": "DECOR-JAP-008",
+      "ssim": 0.918346627526681,
+      "fallback": false
+    },
+    {
+      "catalog_item_id": "CHAIR-JAP-042",
+      "ssim": 0.9404468617633795,
+      "fallback": false
+    },
+    {
+      "catalog_item_id": "FURN-JAP-004",
+      "ssim": 0.8971201690356915,
+      "fallback": false
+    },
+    {
+      "catalog_item_id": "LIGHT-JAP-007",
+      "ssim": 0.9337373918495103,
+      "fallback": false
+    }
+  ],
+  "fallbacks": []
+}

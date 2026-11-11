@@ -1,0 +1,62 @@
+{
+  "RUG-JAP-006": {
+    "area": 34055,
+    "bbox": [
+      186,
+      328,
+      431,
+      467
+    ],
+    "flat": true
+  },
+  "DECOR-JAP-008": {
+    "area": 1080,
+    "bbox": [
+      533,
+      399,
+      563,
+      435
+    ],
+    "flat": false
+  },
+  "FURN-JAP-004": {
+    "area": 4320,
+    "bbox": [
+      636,
+      429,
+      716,
+      483
+    ],
+    "flat": false
+  },
+  "CHAIR-JAP-042": {
+    "area": 5590,
+    "bbox": [
+      68,
+      365,
+      133,
+      451
+    ],
+    "flat": false
+  },
+  "FURN-JAP-001": {
+    "area": 3692,
+    "bbox": [
+      465,
+      255,
+      536,
+      307
+    ],
+    "flat": false
+  },
+  "LIGHT-JAP-007": {
+    "area": 1029,
+    "bbox": [
+      666,
+      398,
+      687,
+      447
+    ],
+    "flat": false
+  }
+}

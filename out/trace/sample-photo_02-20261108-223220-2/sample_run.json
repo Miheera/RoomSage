@@ -1,0 +1,41 @@
+{
+  "photo": "photo_02.jpg",
+  "layout": "compact rectangular room",
+  "lighting_profile": "window-lit / neutral",
+  "mean_input_luminance_0_255": 183.05,
+  "seconds": 5.698,
+  "provider": "huggingface",
+  "model_id": "openmmlab/upernet-convnext-small",
+  "model_device": "cpu",
+  "cuda_available": true,
+  "cuda_device": "NVIDIA GeForce RTX 3050 Laptop GPU",
+  "furniture_guard": "passed",
+  "selected_surface_items": [
+    {
+      "id": "audit-paint-sage",
+      "name": "Sage wall finish (surface test)",
+      "role": "paint"
+    },
+    {
+      "id": "audit-floor-oak",
+      "name": "Oak plank texture (surface test)",
+      "role": "flooring"
+    }
+  ],
+  "hotspots": [
+    {
+      "catalog_item_id": "audit-paint-sage",
+      "visible": true,
+      "x": null,
+      "y": null,
+      "visibility_reason": null
+    },
+    {
+      "catalog_item_id": "audit-floor-oak",
+      "visible": true,
+      "x": null,
+      "y": null,
+      "visibility_reason": null
+    }
+  ]
+}

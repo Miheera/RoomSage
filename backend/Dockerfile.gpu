@@ -1,4 +1,4 @@
-FROM nvidia/cuda:12.1.1-devel-ubuntu22.04
+FROM nvidia/cuda:12.4.1-devel-ubuntu22.04
 
 ENV DEBIAN_FRONTEND=noninteractive \
     PYTHONUNBUFFERED=1 \
@@ -22,10 +22,10 @@ RUN update-alternatives --install /usr/bin/python python /usr/bin/python3.10 1 \
     && python -m pip install --no-cache-dir --upgrade "pip<26"
 
 RUN python -m pip install --no-cache-dir \
-    torch==2.2.2 \
-    torchvision==0.17.2 \
-    torchaudio==2.2.2 \
-    --index-url https://download.pytorch.org/whl/cu121
+    torch==2.6.0 \
+    torchvision==0.21.0 \
+    torchaudio==2.6.0 \
+    --index-url https://download.pytorch.org/whl/cu124
 
 RUN python -m pip install --no-cache-dir gsplat==1.0.0 \
     && python -m pip install --no-cache-dir nerfstudio==1.0.2
@@ -35,6 +35,9 @@ WORKDIR /app
 COPY requirements.txt .
 RUN python -m pip install --no-cache-dir -r requirements.txt
 
-COPY . .
+RUN groupadd --gid 10001 roomsage \
+    && useradd --uid 10001 --gid 10001 --create-home --shell /usr/sbin/nologin roomsage
+
+COPY --chown=roomsage:roomsage . .
 
 CMD ["celery", "-A", "tasks.celery_app.celery_app", "worker", "--loglevel=INFO", "-Q", "gpu_queue"]

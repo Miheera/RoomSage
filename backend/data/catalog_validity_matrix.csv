@@ -1,0 +1,19 @@
+room_type,style,essential_role_counts,valid,minimum_budget_inr
+living_room,Bohemian,"{""sofa"":1,""chair"":2,""coffee_table"":1,""lighting"":2,""rug"":2}",yes,64450
+living_room,Industrial,"{""sofa"":1,""chair"":1,""coffee_table"":2,""lighting"":3,""rug"":1}",yes,60450
+living_room,Japandi,"{""sofa"":1,""chair"":2,""coffee_table"":1,""lighting"":3,""rug"":3}",yes,37059
+living_room,Modern Indian Contemporary,"{""sofa"":2,""chair"":1,""coffee_table"":2,""lighting"":2,""rug"":2}",yes,74350
+living_room,Modern Minimalist,"{""sofa"":2,""chair"":2,""coffee_table"":2,""lighting"":3,""rug"":2}",yes,55020
+living_room,Nordic / Scandinavian,"{""sofa"":2,""chair"":3,""coffee_table"":2,""lighting"":2,""rug"":3}",yes,48859
+bedroom,Bohemian,"{""bed"":0,""storage"":0,""lighting"":2,""rug"":2}",no,
+bedroom,Industrial,"{""bed"":1,""storage"":1,""lighting"":3,""rug"":1}",yes,44460
+bedroom,Japandi,"{""bed"":0,""storage"":1,""lighting"":3,""rug"":3}",no,
+bedroom,Modern Indian Contemporary,"{""bed"":0,""storage"":3,""lighting"":2,""rug"":2}",no,
+bedroom,Modern Minimalist,"{""bed"":0,""storage"":4,""lighting"":3,""rug"":2}",no,
+bedroom,Nordic / Scandinavian,"{""bed"":2,""storage"":0,""lighting"":2,""rug"":3}",no,
+dining_room,Bohemian,"{""dining_table"":0,""chair"":2,""lighting"":2,""rug"":2}",no,
+dining_room,Industrial,"{""dining_table"":0,""chair"":1,""lighting"":3,""rug"":1}",no,
+dining_room,Japandi,"{""dining_table"":1,""chair"":2,""lighting"":3,""rug"":3}",yes,12459
+dining_room,Modern Indian Contemporary,"{""dining_table"":0,""chair"":1,""lighting"":2,""rug"":2}",no,
+dining_room,Modern Minimalist,"{""dining_table"":0,""chair"":2,""lighting"":3,""rug"":2}",no,
+dining_room,Nordic / Scandinavian,"{""dining_table"":1,""chair"":3,""lighting"":2,""rug"":3}",yes,35850

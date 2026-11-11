@@ -1,0 +1,39 @@
+{
+  "prompt": "Match the surrounding lighting and add a subtle, tight contact shadow at the item's contact surface.",
+  "strength": 0.3,
+  "ssim_threshold": 0.6,
+  "seconds": 56.1034903999971,
+  "items": [
+    {
+      "catalog_item_id": "FURN-JAP-001",
+      "ssim": 0.9948567424413731,
+      "fallback": false
+    },
+    {
+      "catalog_item_id": "RUG-JAP-006",
+      "ssim": 0.9894906367017834,
+      "fallback": false
+    },
+    {
+      "catalog_item_id": "DECOR-JAP-008",
+      "ssim": 0.9525995882992181,
+      "fallback": false
+    },
+    {
+      "catalog_item_id": "CHAIR-JAP-042",
+      "ssim": 1.0,
+      "fallback": false
+    },
+    {
+      "catalog_item_id": "FURN-JAP-004",
+      "ssim": 0.9799372788291149,
+      "fallback": false
+    },
+    {
+      "catalog_item_id": "LIGHT-JAP-007",
+      "ssim": 0.9633341866259794,
+      "fallback": false
+    }
+  ],
+  "fallbacks": []
+}

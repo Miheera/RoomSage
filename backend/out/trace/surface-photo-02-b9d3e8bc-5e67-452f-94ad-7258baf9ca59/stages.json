@@ -1,0 +1,11 @@
+[
+  {
+    "stage": "01_input.png",
+    "file": "out\\trace\\surface-photo-02-b9d3e8bc-5e67-452f-94ad-7258baf9ca59\\01_input.png",
+    "seconds": 0,
+    "peak_allocated_vram_mb": null,
+    "peak_reserved_vram_mb": null,
+    "model_id": "Pillow aspect-preserving resize",
+    "device": "cpu"
+  }
+]
